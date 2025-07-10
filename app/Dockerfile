@@ -1,19 +1,31 @@
+# Stage 1: Build the React app
 FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-COPY package*.json ./
+# Copy only dependency files first for better caching
+COPY package.json yarn.lock ./
 
-RUN npm install --legacy-peer-deps
+# Install dependencies
+RUN yarn install
 
+# Copy the rest of the app
 COPY . .
 
-FROM node:18-alpine
+# Build the production version
+RUN yarn build
 
-WORKDIR /app
+# Stage 2: Serve with Nginx
+FROM nginx:alpine
 
-COPY --from=builder /app /app
+# Remove default nginx static assets
+RUN rm -rf /usr/share/nginx/html/*
 
-EXPOSE 3000
+# Copy the build output from the builder stage
+COPY --from=builder /app/build /usr/share/nginx/html
 
-CMD ["node", "index.js"]
+# Expose port 80
+EXPOSE 80
+
+# Run nginx in the foreground
+CMD ["nginx", "-g", "daemon off;"]
