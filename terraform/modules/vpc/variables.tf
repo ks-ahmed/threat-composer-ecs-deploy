@@ -1,4 +1,4 @@
-variable "vpc_cidr" {
-  description = "CIDR block for the VPC"
-  type        = string
-}
+variable "name_prefix" {}
+variable "vpc_cidr" {}
+variable "public_subnet_cidrs" {}
+variable "azs" {}

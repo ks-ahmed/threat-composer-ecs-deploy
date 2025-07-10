@@ -1,9 +1,14 @@
 variable "domain" {
-  description = "Domain name for the ACM certificate (e.g., tm.labs.example.com)"
+  description = "The domain name to request the certificate for"
   type        = string
 }
 
-variable "zone_id" {
-  description = "Route53 Hosted Zone ID for the domain"
+variable "name_prefix" {
+  description = "Prefix for naming resources"
+  type        = string
+}
+
+variable "cloudflare_zone_id" {
+  description = "The Cloudflare Zone ID for your domain"
   type        = string
 }
