@@ -1,24 +1,4 @@
-terraform {
-  required_version = ">= 1.0"
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 4.0"
-    }
-    cloudflare = {
-      source  = "cloudflare/cloudflare"
-      version = "~> 3.0"
-    }
-  }
-}
 
-provider "aws" {
-  region = var.aws_region
-}
-
-provider "cloudflare" {
-  api_token = var.cloudflare_api_token
-}
 
 # VPC module
 module "vpc" {
@@ -29,16 +9,18 @@ module "vpc" {
   name_prefix         = var.name_prefix
 }
 
-# ACM module (certificate)
+# ACM module, explicitly using us-east-1 provider alias
 module "acm" {
-  source            = "./modules/acm"
+  source = "./modules/acm"
+  
   providers = {
     aws = aws.us_east_1
+    cloudflare = cloudflare
   }
-
-  domain            = var.domain
-  name_prefix       = var.name_prefix
-  cloudflare_zone_id = var.cloudflare_zone_id
+  
+  domain              = var.domain
+  name_prefix         = var.name_prefix
+  cloudflare_zone_id  = var.cloudflare_zone_id
 }
 
 # ALB module
@@ -66,9 +48,9 @@ module "ecs" {
   target_group_arn   = module.alb.target_group_arn
   cpu                = var.cpu
   memory             = var.memory
-
 }
 
+# Outputs
 output "alb_dns_name" {
   description = "Application Load Balancer DNS Name"
   value       = module.alb.alb_dns_name
@@ -82,4 +64,9 @@ output "ecs_cluster_name" {
 output "ecs_service_name" {
   description = "ECS Service Name"
   value       = module.ecs.service_name
+}
+
+output "certificate_arn" {
+  description = "ACM Certificate ARN (in us-east-1)"
+  value       = module.acm.certificate_arn
 }
