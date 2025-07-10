@@ -32,6 +32,10 @@ module "vpc" {
 # ACM module (certificate)
 module "acm" {
   source            = "./modules/acm"
+  providers = {
+    aws = aws.us_east_1
+  }
+
   domain            = var.domain
   name_prefix       = var.name_prefix
   cloudflare_zone_id = var.cloudflare_zone_id

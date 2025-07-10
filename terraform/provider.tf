@@ -12,3 +12,8 @@ terraform {
 
   required_version = ">= 1.3.0"
 }
+
+provider "aws" {
+  alias  = "us_east_1"
+  region = "us-east-1"
+}
