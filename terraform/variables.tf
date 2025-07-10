@@ -1,24 +1,7 @@
-variable "name_prefix" {
-  description = "Prefix for naming resources"
+variable "aws_region" {
+  description = "AWS region"
   type        = string
-  default     = "ecs-todo"
-}
-
-variable "region" {
-  description = "AWS region to deploy"
-  type        = string
-  default     = "eu-west-2"
-}
-
-variable "desired_count" {
-  description = "Number of ECS tasks to run"
-  type        = number
-  default     = 1
-}
-
-variable "container_image" {
-  description = "Full Docker image URI (ECR or other) for ECS task"
-  type        = string
+  default     = "us-east-1"
 }
 
 variable "vpc_cidr" {
@@ -28,24 +11,73 @@ variable "vpc_cidr" {
 }
 
 variable "public_subnet_cidrs" {
-  description = "List of public subnet CIDRs"
+  description = "List of CIDRs for public subnets"
   type        = list(string)
   default     = ["10.0.1.0/24", "10.0.2.0/24"]
 }
 
 variable "azs" {
-  description = "Availability zones to use"
+  description = "Availability zones"
   type        = list(string)
-  default     = ["eu-west-2a", "eu-west-2b"]
+  default     = ["us-east-1a", "us-east-1b"]
 }
 
-variable "alb_certificate_arn" {
-  description = "ARN of ACM certificate for HTTPS"
+variable "name_prefix" {
+  description = "Prefix for all resource names"
+  type        = string
+  default     = "ecs-todo"
+}
+
+variable "domain" {
+  description = "Domain name for ACM certificate"
   type        = string
 }
 
-variable "alb_port" {
-  description = "Port for the ALB listener"
+variable "cloudflare_zone_id" {
+  description = "Cloudflare Zone ID for DNS validation"
+  type        = string
+}
+
+variable "cloudflare_api_token" {
+  description = "Cloudflare API Token with DNS edit permissions"
+  type        = string
+  sensitive   = true
+}
+
+variable "image" {
+  description = "Docker image URI for ECS service"
+  type        = string
+}
+
+variable "desired_count" {
+  description = "Number of ECS tasks"
   type        = number
-  default     = 443
+  default     = 1
+}
+
+variable "container_port" {
+  description = "Port exposed by container"
+  type        = number
+  default     = 80
+}
+
+variable "cpu" {
+  description = "CPU units for ECS task"
+  type        = string
+  default     = "256"
+}
+
+variable "memory" {
+  description = "Memory (MB) for ECS task"
+  type        = string
+  default     = "512"
+}
+
+variable "tags" {
+  description = "Tags for all resources"
+  type        = map(string)
+  default     = {
+    Environment = "dev"
+    Project     = "ecs-todo"
+  }
 }
