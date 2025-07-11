@@ -1,0 +1,37 @@
+name: Terraform Plan
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_uri:
+        description: 'Docker Image URI (from ECR)'
+        required: true
+        type: string
+
+jobs:
+  terraform-plan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: eu-west-2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        working-directory: ./terraform
+        run: terraform init -input=false
+
+      - name: Terraform Plan
+        working-directory: ./terraform
+        run: |
+          terraform plan \
+            -var="container_image=${{ github.event.inputs.image_uri }}" \
+            -out=tfplan
