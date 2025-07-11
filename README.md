@@ -21,6 +21,8 @@ The goal of this assignment is to demonstrate proficiency with:
 
 The deployed app is a basic web service running inside a Docker container, exposed via an ALB with HTTPS support.
 
+<img width="737" height="453" alt="image" src="https://github.com/user-attachments/assets/d934ee33-725d-4cc6-bb7e-f064d06489c6" />
+
 ---
 
 ## ECS Threat Modelling Tool
@@ -37,6 +39,7 @@ Using the ECS Threat Modelling Tool allows you to proactively secure your infras
 ---
 
 ## Architecture
+
 
 <img width="622" height="660" alt="Screenshot 2025-07-11 035259" src="https://github.com/user-attachments/assets/1dbafd67-a47e-4a82-9743-be4e5946d261" />
 
