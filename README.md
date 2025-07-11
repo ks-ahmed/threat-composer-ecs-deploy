@@ -19,9 +19,11 @@ The goal of this assignment is to demonstrate proficiency with:
 - Setting up networking, security groups, and load balancers  
 - Automating deployments via GitHub Actions  
 
-The deployed app is a basic web service running inside a Docker container, exposed via an ALB with HTTPS support.
+The deployed app is a web service running inside a Docker container, exposed via an ALB with HTTPS support.
 
-<img width="737" height="453" alt="image" src="https://github.com/user-attachments/assets/d934ee33-725d-4cc6-bb7e-f064d06489c6" />
+---
+
+<img width="2767" height="599" alt="image" src="https://github.com/user-attachments/assets/ec8883f6-6c48-407b-8966-983ad1d21301" />
 
 ---
 
@@ -40,8 +42,9 @@ Using the ECS Threat Modelling Tool allows you to proactively secure your infras
 
 ## Architecture
 
+<img width="5032" height="1527" alt="image" src="https://github.com/user-attachments/assets/90aa1991-d094-4cdd-870a-f9aada3b1506" />
 
-<img width="622" height="660" alt="Screenshot 2025-07-11 035259" src="https://github.com/user-attachments/assets/1dbafd67-a47e-4a82-9743-be4e5946d261" />
+---
 
              
 
