@@ -1,23 +1,30 @@
 name: Build and Push Docker Image
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
+    inputs:
+      deploy: 
+        description: "Build & Push Dockerfile"
+        required: true
+        default: "start"
 
+      
 env:
   AWS_REGION: eu-west-2
   ECR_REPOSITORY: tm-app
-  IMAGE_TAG: final
+  IMAGE_TAG: ci/cd
+
 
 jobs:
   build-and-push:
     name: Build & Push Docker Image to ECR
     runs-on: ubuntu-latest
 
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -26,9 +33,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+
 
       - name: Build, tag, and push image to ECR
         env:
