@@ -1,25 +1,18 @@
-# Containerized Application Deployment on AWS
+# ECS Threat Modelling Tool – End-to-End DevSecOps on AWS
 
-### This project is based on Amazon's Threat Composer Tool, an open source tool designed to facilitate threat modeling and improve security assessments. 
-You can explore the tool's dashboard here: Threat Composer Tool
+Welcome to the **Threat Modelling Tool**, a fully containerized web application deployed securely on **AWS ECS (Fargate)** with end-to-end infrastructure automation using **Terraform** and **GitHub Actions**. Built for scalability, security, and automation – this project represents a production-grade DevSecOps pipeline with modern cloud architecture.
 
-
-
-This repository contains the Terraform infrastructure and Docker configuration to deploy a simple containerized web application on AWS ECS Fargate with an Application Load Balancer (ALB).
+🔗 Live Demo: [https://tm.vettlyai.com](https://tm.vettlyai.com)
 
 ---
 
 ## Project Overview
 
-The goal of this assignment is to demonstrate proficiency with:
-
-- Docker containerization  
-- AWS ECS Fargate service deployment  
-- Infrastructure as Code with Terraform  
-- Setting up networking, security groups, and load balancers  
-- Automating deployments via GitHub Actions  
-
-The deployed app is a web service running inside a Docker container, exposed via an ALB with HTTPS support.
+This project is a **secure threat modelling dashboard** designed for teams to collaboratively map application security threats. It includes:
+- A containerized frontend app (React-based)
+- Auto-scaled deployment on ECS Fargate
+- HTTPS secured via ACM + Cloudflare
+- Automated DNS routing, cert provisioning, CI/CD workflows
 
 ---
 
@@ -27,51 +20,94 @@ The deployed app is a web service running inside a Docker container, exposed via
 
 ---
 
-## ECS Threat Modelling Tool
+## Technologies Used
 
-To better understand and mitigate security risks in your ECS deployment, this project integrates or references the **ECS Threat Modelling Tool**. This tool helps analyze the security posture of your ECS architecture by:
+| Category       | Tools/Services                             |
+|----------------|---------------------------------------------|
+| **Cloud**      | AWS ECS (Fargate), ALB, ECR, ACM, VPC       |
+| **DNS & TLS**  | Cloudflare DNS, ACM TLS Certs               |
+| **IaC**        | Terraform (Modular, multi-region)           |
+| **CI/CD**      | GitHub Actions (Build, Deploy, Destroy)     |
+| **Security**   | IAM, SSL, Cloudflare proxying               |
+| **Container**  | Docker (Multi-stage build)                  |
 
-- **Identifying potential threats** specific to containerized environments, such as privilege escalation, container escape, and insecure network communication.  
-- **Visualizing the attack surface** for your ECS tasks, services, and networking setup.  
-- **Assessing IAM role permissions and network policies** to highlight over-privileged roles or open access points.  
-- **Providing actionable recommendations** for hardening your ECS deployment, including least privilege enforcement, secure container images, and encrypted traffic.  
 
-Using the ECS Threat Modelling Tool allows you to proactively secure your infrastructure, ensuring that your ECS workloads run safely and compliantly on AWS.
 
 ---
 
-## Architecture
+## 🖼️ Architecture Diagram
 
 <img width="5032" height="1527" alt="image" src="https://github.com/user-attachments/assets/90aa1991-d094-4cdd-870a-f9aada3b1506" />
 
----
-
-             
-
-- **VPC:** Custom VPC with public subnets  
-- **Security Groups:** Allow HTTP/HTTPS ingress, outbound traffic open  
-- **Load Balancer:** Application Load Balancer with HTTPS listener (ACM cert)  
-- **ECS:** Fargate launch type with task definition running the container  
-- **Docker:** App container built and pushed to AWS ECR  
-- **Terraform:** Manages all AWS resources as code  
+> Includes ALB, ECS Fargate, ECR, ACM, GitHub Actions CI/CD, Cloudflare DNS, and IAM roles – all provisioned with Terraform.
 
 ---
 
-## Prerequisites
+## CI/CD Workflow Overview
 
-- AWS Account with appropriate permissions  
-- Terraform installed (v1.0+)  
-- AWS CLI configured with credentials  
-- Docker installed locally for building images  
-- GitHub account for CI/CD (optional)
+All workflows are modular and triggered via `workflow_dispatch` or `push`. Built for auditability, safety, and repeatability.
 
----
+### Build & Push Docker Image
+```yaml
+Trigger: push to main / manual dispatch
+Steps:
+- Checkout Code
+- Login to AWS ECR
+- Build & Tag Docker Image
+- Push to ECR
+```
 
-## Setup Instructions
+# Terraform Init
 
-1. **Clone this repository:**
+`Trigger: Manual
+Steps:
+- Configure AWS Credentials
+- Terraform init (infrastructure bootstrapping)`
 
-   ```bash
-   git clone https://github.com/CoderCo-Learning/ecs-assignment.git
-   cd ecs-assignment
+
+# Terraform Plan
+
+`Trigger: Manual
+Steps:
+- Plan infra changes using latest ECR image
+- Show preview before apply`
+
+# Terraform Apply
+
+`Trigger: Manual
+Steps:
+- Apply infra changes (ECS service, ALB, ACM, etc.)`
+
+# Terraform Destroy
+
+`Trigger: Manual
+Steps:
+- Clean up all AWS resources`
+
+
+# How to Use (For Reviewers)
+
+  - Clone the repo
+  - Update terraform.tfvars or GitHub secrets
+  - Trigger CI/CD pipelines on GitHub Actions
+  - Access the app at: https://tm.vettlyai.com
+
+# Why This Project?
+
+ - This project was built to simulate a real-world deployment scenario for a secure web application using DevOps best practices. It demonstrates:
+ - Hands-on mastery of AWS infrastructure
+ - Deep understanding of Terraform and modular design
+ - CI/CD integration with Docker, GitHub Actions, and ECR
+ - Attention to production-grade security (TLS, IAM, DNS)
+
+# License
+MIT License — feel free to use, fork, and deploy.
+
+
+
+
+
+
+
+
 
