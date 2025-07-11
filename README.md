@@ -35,7 +35,7 @@ This project is a **secure threat modelling dashboard** designed for teams to co
 
 ---
 
-## 🖼️ Architecture Diagram
+## Architecture Diagram
 
 <img width="5032" height="1527" alt="image" src="https://github.com/user-attachments/assets/90aa1991-d094-4cdd-870a-f9aada3b1506" />
 
