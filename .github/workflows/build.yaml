@@ -12,7 +12,7 @@ on:
 env:
   AWS_REGION: eu-west-2
   ECR_REPOSITORY: tm-app
-  IMAGE_TAG: ci/cd
+  IMAGE_TAG: ci
 
 
 jobs:
