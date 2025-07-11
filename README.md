@@ -1,18 +1,25 @@
 # ECS Threat Modelling Tool – End-to-End DevSecOps on AWS
 
-Welcome to the **Threat Modelling Tool**, a fully containerized web application deployed securely on **AWS ECS (Fargate)** with end-to-end infrastructure automation using **Terraform** and **GitHub Actions**. Built for scalability, security, and automation – this project represents a production-grade DevSecOps pipeline with modern cloud architecture.
+# Threat Modelling Tool
 
-🔗 Live Demo: [https://tm.vettlyai.com](https://tm.vettlyai.com)
+Welcome to the **Threat Modelling Tool**, a fully containerized web application designed to provide teams with an intuitive platform for collaboratively identifying, mapping, and managing security threats within their applications. This project showcases a modern, production-grade cloud architecture built on Amazon Web Services (AWS) using ECS Fargate, a serverless container orchestration service that removes the need to manage servers, allowing the application to scale seamlessly based on demand. By leveraging containerization, the application ensures consistent, reliable deployments across development, testing, and production environments.
+
+At the core of this project lies an automated infrastructure provisioning and deployment pipeline powered by **Terraform** and **GitHub Actions**. Terraform enables Infrastructure as Code (IaC), allowing you to define, version, and automate the complete cloud infrastructure lifecycle — from network setup with VPCs and security groups, to ECS clusters, Application Load Balancers, and ACM certificates for HTTPS. GitHub Actions orchestrate the CI/CD workflows that automate building Docker images, pushing them securely to Amazon ECR, and deploying infrastructure changes in a controlled, repeatable fashion. This end-to-end automation minimizes human error, accelerates release cycles, and enforces best practices in DevOps and cloud engineering.
+
+Security and scalability are deeply integrated into every aspect of this project. HTTPS encryption is enforced using AWS Certificate Manager (ACM) combined with Cloudflare DNS to provide trusted, fast, and secure traffic routing. IAM roles and policies are carefully configured following the principle of least privilege, ensuring each component only has the permissions it needs. The architecture supports fault tolerance through auto-scaling ECS tasks behind an Application Load Balancer (ALB), while modular Terraform code promotes reusability and maintainability. This project not only demonstrates technical proficiency but also reflects real-world cloud deployment challenges and solutions, making it an excellent showcase of modern DevSecOps and cloud-native application delivery.
+
+
 
 ---
 
 ## Project Overview
 
-This project is a **secure threat modelling dashboard** designed for teams to collaboratively map application security threats. It includes:
-- A containerized frontend app (React-based)
-- Auto-scaled deployment on ECS Fargate
-- HTTPS secured via ACM + Cloudflare
-- Automated DNS routing, cert provisioning, CI/CD workflows
+This project delivers a **secure threat modeling dashboard** designed to empower teams with a collaborative platform for mapping and managing application security threats. Key features include:
+
+- **Containerized frontend application** built with React, providing an intuitive and responsive user interface
+- **Scalable deployment** on AWS ECS Fargate, enabling automatic resource management and high availability
+- **Robust HTTPS security** enforced through AWS Certificate Manager (ACM) and Cloudflare for encrypted, trusted communications
+- **Automated infrastructure workflows** including DNS routing, SSL certificate provisioning, and end-to-end CI/CD pipelines for streamlined deployments
 
 ---
 
@@ -31,6 +38,52 @@ This project is a **secure threat modelling dashboard** designed for teams to co
 | **Security**   | IAM, SSL, Cloudflare proxying               |
 | **Container**  | Docker (Multi-stage build)                  |
 
+---
+
+```
+.
+├── app/                           
+├── terraform/                     
+│   ├── main.tf                    
+│   ├── variables.tf
+│   ├── outputs.tf
+│   ├── terraform.tfvars         
+│
+│   ├── modules/                  
+│   │   ├── vpc/
+│   │   │   ├── main.tf
+│   │   │   ├── variables.tf
+│   │   │   └── outputs.tf
+│   │   ├── alb/
+│   │   │   ├── main.tf
+│   │   │   ├── variables.tf
+│   │   │   └── outputs.tf
+│   │   ├── ecs/
+│   │   │   ├── main.tf
+│   │   │   ├── variables.tf
+│   │   │   └── outputs.tf
+│   │   ├── acm/
+│   │   │   ├── main.tf
+│   │   │   ├── variables.tf
+│   │   │   └── outputs.tf
+│   │   ├── cloudflare_dns/
+│   │   │   ├── main.tf
+│   │   │   ├── variables.tf
+│   │   │   └── outputs.tf
+│   │   └── ecr/
+│   │       ├── main.tf
+│   │       ├── variables.tf
+│   │       └── outputs.tf
+│
+├── .github/
+│   └── workflows/                
+│       ├── build.yaml
+│       ├── terraform-init.yaml
+│       ├── terraform-plan.yaml
+│       ├── terraform-apply.yaml
+│       └── terraform-destroy.yaml
+
+```
 
 
 ---
@@ -45,44 +98,33 @@ This project is a **secure threat modelling dashboard** designed for teams to co
 
 ## CI/CD Workflow Overview
 
-All workflows are modular and triggered via `workflow_dispatch` or `push`. Built for auditability, safety, and repeatability.
 
-### Build & Push Docker Image
-```yaml
-Trigger: push to main / manual dispatch
-Steps:
-- Checkout Code
-- Login to AWS ECR
-- Build & Tag Docker Image
-- Push to ECR
+```
+# 📈 Deployment Workflow for ECS Threat Modeling Tool
+
+# 1. Push code to main OR manually trigger the build workflow
+echo "➡️ Step 1: Push code to main branch or manually trigger build.yaml"
+
+# 2. GitHub Actions builds Docker image from /app and pushes to Amazon ECR
+echo "➡️ Step 2: GitHub Actions builds Docker image from ./app and pushes to ECR"
+
+# 3. Manually trigger Terraform workflows in the following order:
+echo "➡️ Step 3: Trigger Terraform workflows manually via GitHub Actions UI"
+
+echo "   a. terraform-init.yaml"
+echo "   b. terraform-plan.yaml"
+echo "   c. terraform-apply.yaml"
+
+# 4. ECS Fargate is deployed with the latest container image from ECR
+echo "➡️ Step 4: ECS Fargate runs the containerized app"
+
+# 5. ALB routes incoming HTTPS traffic to ECS
+echo "➡️ Step 5: ALB handles HTTPS and traffic forwarding to ECS tasks"
+
+# 6. Cloudflare resolves DNS for tm.vettlyai.com and routes it to ALB
+echo "➡️ Step 6: Cloudflare routes traffic from tm.vettlyai.com to ALB"
 ```
 
-# Terraform Init
-
-`Trigger: Manual
-Steps:
-- Configure AWS Credentials
-- Terraform init (infrastructure bootstrapping)`
-
-
-# Terraform Plan
-
-`Trigger: Manual
-Steps:
-- Plan infra changes using latest ECR image
-- Show preview before apply`
-
-# Terraform Apply
-
-`Trigger: Manual
-Steps:
-- Apply infra changes (ECS service, ALB, ACM, etc.)`
-
-# Terraform Destroy
-
-`Trigger: Manual
-Steps:
-- Clean up all AWS resources`
 
 
 # How to Use (For Reviewers)
@@ -92,13 +134,29 @@ Steps:
   - Trigger CI/CD pipelines on GitHub Actions
   - Access the app at: https://tm.vettlyai.com
 
-# Why This Project?
+## Why This Project?
 
- - This project was built to simulate a real-world deployment scenario for a secure web application using DevOps best practices. It demonstrates:
- - Hands-on mastery of AWS infrastructure
- - Deep understanding of Terraform and modular design
- - CI/CD integration with Docker, GitHub Actions, and ECR
- - Attention to production-grade security (TLS, IAM, DNS)
+This project was developed to replicate a real-world, production-grade cloud deployment of a secure web application using modern DevOps principles and best practices.
+
+It serves as a comprehensive demonstration of:
+
+### Practical DevOps Expertise
+- End-to-end cloud architecture deployment using AWS services like ECS (Fargate), ALB, ACM, ECR, IAM, and VPC
+- Modular Infrastructure as Code (IaC) with Terraform, allowing scalable, reusable, and maintainable infrastructure components
+- CI/CD automation through GitHub Actions, orchestrating Docker image builds, ECR pushes, and infrastructure provisioning workflows
+
+### Enterprise-Level Security
+- HTTPS enforcement with AWS Certificate Manager (ACM)
+- IAM roles configured using the principle of least privilege
+- Domain-level protection and secure traffic routing using Cloudflare DNS
+
+### Real-World Scenario Simulation
+This project simulates how organizations deploy cloud-native applications with full infrastructure automation, pipeline integration, and robust security, making it ideal for:
+
+- Showcasing hands-on DevOps and cloud engineering proficiency
+- Highlighting secure, scalable, and automated AWS deployments
+- Demonstrating professional readiness for infrastructure-focused roles
+
 
 # License
 MIT License — feel free to use, fork, and deploy.
