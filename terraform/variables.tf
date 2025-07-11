@@ -4,12 +4,6 @@ variable "aws_region" {
   default     = "eu-west-2"
 }
 
-variable "cloudflare_api_token" {
-  description = "Cloudflare API token"
-  type        = string
-  sensitive   = true
-}
-
 variable "cloudflare_zone_id" {
   description = "Cloudflare zone ID"
   type        = string
