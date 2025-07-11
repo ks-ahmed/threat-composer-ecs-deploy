@@ -1,5 +1,6 @@
 name: Terraform Apply
 
+
 on:
   workflow_dispatch:
     inputs:
@@ -8,13 +9,18 @@ on:
         required: true
         type: string
 
+
 jobs:
   terraform-apply:
     runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -23,12 +29,15 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-2
 
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
+
 
       - name: Terraform Init
         working-directory: ./terraform
         run: terraform init -input=false
+
 
       - name: Terraform Apply
         working-directory: ./terraform
