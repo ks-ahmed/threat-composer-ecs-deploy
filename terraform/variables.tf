@@ -1,17 +1,39 @@
 variable "aws_region" {
-  description = "AWS region for most resources"
+  description = "AWS region for ECS and ALB"
   type        = string
   default     = "eu-west-2"
 }
 
+variable "cloudflare_api_token" {
+  description = "Cloudflare API token"
+  type        = string
+  sensitive   = true
+}
+
+variable "cloudflare_zone_id" {
+  description = "Cloudflare zone ID"
+  type        = string
+}
+
+variable "domain" {
+  description = "Domain name (e.g., app.example.com)"
+  type        = string
+}
+
+variable "name_prefix" {
+  description = "Name prefix for all resources"
+  type        = string
+  default     = "myapp"
+}
+
 variable "vpc_cidr" {
-  description = "CIDR block for the VPC"
+  description = "CIDR block for VPC"
   type        = string
   default     = "10.0.0.0/16"
 }
 
 variable "public_subnet_cidrs" {
-  description = "List of CIDRs for public subnets"
+  description = "CIDRs for public subnets"
   type        = list(string)
   default     = ["10.0.1.0/24", "10.0.2.0/24"]
 }
@@ -22,62 +44,25 @@ variable "azs" {
   default     = ["eu-west-2a", "eu-west-2b"]
 }
 
-variable "name_prefix" {
-  description = "Prefix for all resource names"
+variable "container_name" {
+  description = "ECS container name"
   type        = string
-  default     = "ecs-todo"
+  default     = "react-app"
 }
 
-variable "domain" {
-  description = "Domain name for ACM certificate"
-  type        = string
-}
-
-variable "cloudflare_zone_id" {
-  description = "Cloudflare Zone ID for DNS validation"
+variable "container_image" {
+  description = "Container image URL (ECR or Docker Hub)"
   type        = string
 }
 
-variable "cloudflare_api_token" {
-  description = "Cloudflare API Token with DNS edit permissions"
-  type        = string
-  sensitive   = true
-}
-
-variable "image" {
-  description = "Docker image URI for ECS service"
-  type        = string
+variable "container_port" {
+  description = "Container port"
+  type        = number
+  default     = 80
 }
 
 variable "desired_count" {
   description = "Number of ECS tasks"
   type        = number
   default     = 1
-}
-
-variable "container_port" {
-  description = "Port exposed by container"
-  type        = number
-  default     = 80
-}
-
-variable "cpu" {
-  description = "CPU units for ECS task"
-  type        = string
-  default     = "256"
-}
-
-variable "memory" {
-  description = "Memory (MB) for ECS task"
-  type        = string
-  default     = "512"
-}
-
-variable "tags" {
-  description = "Tags for all resources"
-  type        = map(string)
-  default     = {
-    Environment = "dev"
-    Project     = "ecs-todo"
-  }
 }

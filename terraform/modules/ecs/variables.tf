@@ -1,53 +1,50 @@
 variable "name_prefix" {
-  description = "Prefix for naming ECS resources"
-  type        = string
+  type = string
 }
 
-variable "cluster_name" {
-  description = "ECS cluster name"
-  type        = string
+variable "container_name" {
+  type = string
 }
 
-variable "desired_count" {
-  description = "Number of ECS tasks to run"
-  type        = number
-  default     = 1
-}
-
-variable "image" {
-  description = "Full Docker image URI to run"
-  type        = string
+variable "container_image" {
+  type = string
 }
 
 variable "container_port" {
-  description = "Container port to expose"
-  type        = number
-  default     = 80
+  type = number
+}
+
+variable "desired_count" {
+  type = number
 }
 
 variable "subnet_ids" {
-  description = "List of subnet IDs for ECS tasks"
-  type        = list(string)
+  type = list(string)
 }
 
 variable "security_group_ids" {
-  description = "List of security group IDs to assign to ECS tasks"
-  type        = list(string)
+  type = list(string)
 }
 
 variable "target_group_arn" {
-  description = "ARN of the ALB target group to attach ECS service"
+  type = string
+}
+
+variable "execution_role_arn" {
+  type = string
+}
+
+variable "task_role_arn" {
+  type = string
+}
+
+variable "load_balancer_arn" {
+  type = string
+  default = null
+}
+
+variable "certificate_arn" {
+  description = "ACM certificate ARN for HTTPS listener"
   type        = string
 }
 
-variable "cpu" {
-  description = "Task CPU units"
-  type        = string
-  default     = "256"
-}
-
-variable "memory" {
-  description = "Task memory in MB"
-  type        = string
-  default     = "512"
-}
