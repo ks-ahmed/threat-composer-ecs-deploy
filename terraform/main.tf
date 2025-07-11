@@ -118,6 +118,6 @@ module "ecs" {
 module "cloudflare_dns" {
   source             = "./modules/cloudflare_dns"
   cloudflare_zone_id = var.cloudflare_zone_id
-  domain_name        = var.domain
+  domain_name        = "tm"
   target             = module.alb.alb_dns_name
 }
