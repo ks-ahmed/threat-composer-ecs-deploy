@@ -40,6 +40,7 @@ jobs:
         working-directory: ./terraform
         run: |
           terraform plan \
+            -lock=false \
             -var="backend_dynamodb_table_name=terraform-locks" \
             -var="container_image=${{ github.event.inputs.image_uri }}" \
             -var="domain=tm.vettlyai.com" \

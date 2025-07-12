@@ -40,7 +40,7 @@ jobs:
       - name: Terraform Apply
         working-directory: ./terraform
         run: |
-          terraform apply -auto-approve \
+          terraform apply -lock=false -auto-approve \
             -var="backend_dynamodb_table_name=terraform-locks" \
             -var="container_image=${{ github.event.inputs.image_uri }}" \
             -var="domain=tm.vettlyai.com" \

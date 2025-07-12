@@ -41,6 +41,7 @@ jobs:
         working-directory: ./terraform
         run: |
           terraform destroy \
+            -lock=false \
             -target=module.vpc \
             -target=module.ecs \
             -target=module.alb \
