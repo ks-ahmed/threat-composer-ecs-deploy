@@ -74,6 +74,6 @@ override.tf.json
 # example: *tfplan*
 
 # Ignore CLI configuration files
-
+tfplan 
 
 
