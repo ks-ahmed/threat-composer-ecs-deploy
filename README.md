@@ -8,7 +8,10 @@ At the core of this project lies an automated infrastructure provisioning and de
 
 Security and scalability are deeply integrated into every aspect of this project. HTTPS encryption is enforced using AWS Certificate Manager (ACM) combined with Cloudflare DNS to provide trusted, fast, and secure traffic routing. IAM roles and policies are carefully configured following the principle of least privilege, ensuring each component only has the permissions it needs. The architecture supports fault tolerance through auto-scaling ECS tasks behind an Application Load Balancer (ALB), while modular Terraform code promotes reusability and maintainability. This project not only demonstrates technical proficiency but also reflects real-world cloud deployment challenges and solutions, making it an excellent showcase of modern DevSecOps and cloud-native application delivery.
 
+### Live Demo:
 
+
+https://github.com/user-attachments/assets/7c7b4f44-b98c-4e29-8acc-9d493eb4ed87
 
 ---
 
@@ -41,15 +44,19 @@ This project delivers a **secure threat modeling dashboard** designed to empower
 ---
 
 ```
-.
 ├── app/                           
 ├── terraform/                     
 │   ├── main.tf                    
 │   ├── variables.tf
 │   ├── outputs.tf
 │   ├── terraform.tfvars         
+│   ├── provider.tf                
 │
 │   ├── modules/                  
+│   │   ├── backend/              
+│   │   │   ├── main.tf
+│   │   │   ├── variables.tf
+│   │   │   └── outputs.tf
 │   │   ├── vpc/
 │   │   │   ├── main.tf
 │   │   │   ├── variables.tf
@@ -66,16 +73,15 @@ This project delivers a **secure threat modeling dashboard** designed to empower
 │   │   │   ├── main.tf
 │   │   │   ├── variables.tf
 │   │   │   └── outputs.tf
-│   ├── ├── cloudflare_dns/
-│           ├── main.tf
-│           ├── variables.tf
-│           └── outputs.tf
-│   
+│   │   └── cloudflare_dns/
+│   │       ├── main.tf
+│   │       ├── variables.tf
+│   │       └── outputs.tf
+│
 ├── .github/
 │   └── workflows/                
 │       ├── build.yaml
-│       ├── terraform-init.yaml
-│       ├── terraform-plan.yaml
+│       ├── terraform-init-plan.yaml
 │       ├── terraform-apply.yaml
 │       └── terraform-destroy.yaml
 
@@ -121,6 +127,32 @@ echo "➡️ Step 5: ALB handles HTTPS and traffic forwarding to ECS tasks"
 echo "➡️ Step 6: Cloudflare routes traffic from tm.vettlyai.com to ALB"
 ```
 
+# Screenshots
+
+---
+
+<img width="1504" height="777" alt="Screenshot 2025-07-12 114303" src="https://github.com/user-attachments/assets/5a2cbb57-d53f-4717-9000-e0763de5ac69" />
+
+---
+
+<img width="1559" height="815" alt="Screenshot 2025-07-12 114352" src="https://github.com/user-attachments/assets/fb2b813c-d60a-438e-8e2a-6ce7ba10cee6" />
+
+---
+
+<img width="1563" height="802" alt="Screenshot 2025-07-12 114404" src="https://github.com/user-attachments/assets/1054f59a-cb8b-486a-8cdd-84399e8ef451" />
+
+---
+
+<img width="1613" height="808" alt="Screenshot 2025-07-12 114506" src="https://github.com/user-attachments/assets/ff20c503-ff39-4492-b990-fded933383fa" />
+
+---
+
+<img width="1455" height="605" alt="Screenshot 2025-07-12 114828" src="https://github.com/user-attachments/assets/ad69c62e-cb32-47c5-81c2-dad6e40d215f" />
+
+
+---
+
+<img width="1877" height="1056" alt="Screenshot 2025-07-12 114003" src="https://github.com/user-attachments/assets/31388eba-fe41-49ac-992b-7a1af38eaf03" />
 
 
 # How to Use (For Reviewers)
