@@ -75,5 +75,6 @@ override.tf.json
 
 # Ignore CLI configuration files
 tfplan 
+.terraform.lock.hcl
 
 
