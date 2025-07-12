@@ -46,6 +46,7 @@ jobs:
             -target=module.alb \
             -target=module.acm \
             -target=module.cloudflare_dns \
+            -var="backend_dynamodb_table_name=terraform-locks" \
             -var="container_image=${{ github.event.inputs.image_uri }}" \
             -var="domain=tm.vettlyai.com" \
             -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
