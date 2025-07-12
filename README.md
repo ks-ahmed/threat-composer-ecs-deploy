@@ -42,6 +42,46 @@ This project delivers a **secure threat modeling dashboard** designed to empower
 | **Container**  | Docker (Multi-stage build)                  |
 
 ---
+## Remote Backend: S3 + DynamoDB for Terraform State Management
+
+As part of the Terraform infrastructure, this project uses a **remote backend** powered by **Amazon S3** and **DynamoDB** to securely and reliably manage the Terraform state across CI/CD pipelines and developers.
+
+### Why Use an S3 Remote Backend?
+
+Using an S3 backend for Terraform state offers major advantages in team-based and production deployments:
+
+- **Centralized state storage** accessible to all environments and pipelines  
+- **Safe concurrent access** through **DynamoDB state locking**  
+- **Disaster recovery** via built-in S3 versioning  
+- **Auditability** and **change history** for state files  
+- **Automation-friendly** for CI/CD workflows  
+
+This makes collaboration between developers, automated pipelines, and infrastructure-safe changes possible in a secure, scalable manner.
+
+---
+
+### Automated Backend Provisioning
+
+The `backend` Terraform module located at `terraform/modules/backend` provisions:
+
+- An S3 bucket (e.g. `vettlyai-tf-state-prod`) for remote state  
+- A DynamoDB table (e.g. `terraform-locks`) for state locking and consistency
+
+```hcl
+# terraform/main.tf
+module "backend" {
+  source                  = "./modules/backend"
+  backend_bucket_name     = "vettlyai-tf-state-prod"
+  dynamodb_table_name     = "terraform-locks"
+  region                  = "eu-west-2"
+}
+```
+By adopting a **remote backend**, the  infrastructure becomes more **reliable, collaborative, and resilient** — ideal for scaling Terraform workflows in modern cloud environments.
+
+---
+
+# Project Architecture
+---
 
 ```
 ├── app/                           
