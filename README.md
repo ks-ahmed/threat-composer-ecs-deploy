@@ -66,15 +66,11 @@ This project delivers a **secure threat modeling dashboard** designed to empower
 │   │   │   ├── main.tf
 │   │   │   ├── variables.tf
 │   │   │   └── outputs.tf
-│   │   ├── cloudflare_dns/
-│   │   │   ├── main.tf
-│   │   │   ├── variables.tf
-│   │   │   └── outputs.tf
-│   │   └── ecr/
-│   │       ├── main.tf
-│   │       ├── variables.tf
-│   │       └── outputs.tf
-│
+│   ├── ├── cloudflare_dns/
+│           ├── main.tf
+│           ├── variables.tf
+│           └── outputs.tf
+│   
 ├── .github/
 │   └── workflows/                
 │       ├── build.yaml
