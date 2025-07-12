@@ -121,3 +121,10 @@ module "cloudflare_dns" {
   domain_name        = "tm"
   target             = module.alb.alb_dns_name
 }
+
+module "backend" {
+  source              = "./modules/backend"
+  bucket_name         = var.backend_bucket_name
+  dynamodb_table_name = var.backend_dynamodb_table_name
+  tags                = var.default_tags
+}

@@ -1,5 +1,5 @@
 variable "aws_region" {
-  description = "AWS region for ECS and ALB"
+  description = "AWS region for ECS, ALB and Backend"
   type        = string
   default     = "eu-west-2"
 }
@@ -67,3 +67,23 @@ variable "desired_count" {
   type        = number
   default     = 1
 }
+
+
+variable "backend_bucket_name" {
+  type        = string
+  description = "Name of the S3 bucket for Terraform state"
+}
+
+variable "backend_dynamodb_table_name" {
+  type        = string
+  description = "Name of the DynamoDB table for state locking"
+}
+
+variable "default_tags" {
+  type = map(string)
+  default = {
+    Environment = "infrastructure"
+    ManagedBy   = "Terraform"
+  }
+}
+

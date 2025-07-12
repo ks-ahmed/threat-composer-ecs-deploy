@@ -26,3 +26,10 @@ output "alb_arn" {
   value = module.alb.alb_arn
 }
 
+output "backend_bucket_name" {
+  value = module.backend.bucket_name
+}
+
+output "backend_dynamodb_table_name" {
+  value = module.backend.dynamodb_table_name
+}
