@@ -9,6 +9,13 @@ variable "cloudflare_zone_id" {
   type        = string
 }
 
+variable "cloudflare_api_token" {
+  description = "Cloudflare API token"
+  type        = string
+  sensitive   = true
+}
+
+
 variable "domain" {
   description = "Domain name (e.g., app.example.com)"
   type        = string
