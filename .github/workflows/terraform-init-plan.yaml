@@ -1,17 +1,17 @@
-name: Terraform Init
+name: Terraform Initialize & Plan
 
 
 on:
   workflow_dispatch:
     inputs:
-      aws-region:
-        description: "AWS region to deploy to"
+      image_uri:
+        description: 'Docker Image URI (from ECR)'
         required: true
-        default: "eu-west-2"
+        type: string
 
 
 jobs:
-  terraform-init:
+  terraform-plan:
     runs-on: ubuntu-latest
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -21,13 +21,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ github.event.inputs.aws-region }}
+          aws-region: eu-west-2
 
 
       - name: Setup Terraform
@@ -37,3 +36,12 @@ jobs:
       - name: Terraform Init
         working-directory: ./terraform
         run: terraform init -input=false
+
+
+      - name: Terraform Plan
+        working-directory: ./terraform
+        run: |
+          terraform plan \
+            -var="container_image=${{ github.event.inputs.image_uri }}" \
+            -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
+            -out=tfplan
