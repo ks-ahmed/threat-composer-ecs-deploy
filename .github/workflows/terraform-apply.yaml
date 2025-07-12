@@ -45,3 +45,5 @@ jobs:
             -var="domain=tm.vettlyai.com" \
             -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
             -var="cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}"
+            -var="backend_bucket_name=vettlyai-tf-state-prod" \
+            -var="dynamodb_table_name=terraform-locks" \
