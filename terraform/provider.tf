@@ -1,4 +1,14 @@
 terraform {
+  backend "s3" {
+    bucket         = "vettlyai-tf-state-prod"
+    key            = "vettlyai/terraform.tfstate"
+    region         = "eu-west-2"
+    dynamodb_table = "terraform-locks"
+    encrypt        = true
+  }
+}
+
+terraform {
   required_providers {
     aws = {
       source = "hashicorp/aws"
