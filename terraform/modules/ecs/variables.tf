@@ -27,16 +27,6 @@ variable "memory" {
   default     = "512"
 }
 
-variable "execution_role_arn" {
-  description = "ARN of the execution role"
-  type        = string
-}
-
-variable "task_role_arn" {
-  description = "ARN of the task role"
-  type        = string
-}
-
 variable "container_name" {
   description = "Container name"
   type        = string
@@ -123,4 +113,61 @@ variable "assign_public_ip" {
   description = "Whether to assign a public IP"
   type        = bool
   default     = true
+}
+
+variable "vpc_id" {
+  description = "VPC ID for the ECS service and security group"
+  type        = string
+}
+
+variable "sg_description" {
+  description = "Description for the ECS security group"
+  type        = string
+  default     = "Allow HTTP and HTTPS inbound"
+}
+
+
+variable "ingress_rules" {
+  description = "List of ingress rules for ECS SG"
+  type = list(object({
+    description = string
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    cidr_blocks = list(string)
+  }))
+  default = [
+    {
+      description = "Allow HTTP"
+      from_port   = 80
+      to_port     = 80
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    },
+    {
+      description = "Allow HTTPS"
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  ]
+}
+
+variable "egress_rules" {
+  description = "List of egress rules for ECS SG"
+  type = list(object({
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    cidr_blocks = list(string)
+  }))
+  default = [
+    {
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  ]
 }

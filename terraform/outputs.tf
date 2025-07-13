@@ -43,3 +43,19 @@ output "ecs_task_definition_arn" {
   description = "ARN of the ECS Task Definition"
   value       = module.ecs.ecs_task_definition_arn
 }
+
+output "ecs_security_group_id" {
+  description = "ECS Security Group ID"
+  value       = module.ecs.ecs_security_group_id
+}
+
+output "ecs_task_execution_role_arn" {
+  value       = module.ecs_iam_roles.execution_role_arn
+  description = "ARN of the ECS task execution role"
+}
+
+output "ecs_task_role_arn" {
+  value       = module.ecs_iam_roles.task_role_arn
+  description = "ARN of the ECS task role"
+}
+
