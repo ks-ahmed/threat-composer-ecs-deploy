@@ -62,6 +62,9 @@ module "alb" {
 module "iam_roles" {
   source      = local.iam_module_source
   name_prefix = var.name_prefix
+  execution_role_name = var.execution_role_name
+  task_role_name      = var.task_role_name
+
 }
 
 
