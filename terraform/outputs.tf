@@ -33,3 +33,13 @@ output "backend_bucket_name" {
 output "backend_dynamodb_table_name" {
   value = module.backend.dynamodb_table_name
 }
+
+output "target_group_arn" {
+  description = "Target Group ARN"
+  value       = module.alb.target_group_arn
+}
+
+output "ecs_task_definition_arn" {
+  description = "ARN of the ECS Task Definition"
+  value       = module.ecs.ecs_task_definition_arn
+}

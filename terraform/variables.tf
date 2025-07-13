@@ -15,7 +15,6 @@ variable "cloudflare_api_token" {
   sensitive   = true
 }
 
-
 variable "domain" {
   description = "Domain name (e.g., app.example.com)"
   type        = string
@@ -68,7 +67,6 @@ variable "desired_count" {
   default     = 1
 }
 
-
 variable "backend_bucket_name" {
   type        = string
   description = "Name of the S3 bucket for Terraform state"
@@ -88,9 +86,176 @@ variable "default_tags" {
 }
 
 variable "validation_method" {
-  type = string
+  type        = string
 }
 
 variable "cloudflare_ttl" {
-  type = number
+  type        = number
+}
+
+variable "cloudflare_record_type" {
+  description = "Type of DNS record (e.g., A, CNAME)"
+  type        = string
+  default     = "CNAME"
+}
+
+variable "cloudflare_record_ttl" {
+  description = "TTL for the DNS record"
+  type        = number
+  default     = 300
+}
+
+variable "cloudflare_record_proxied" {
+  description = "Whether Cloudflare should proxy this record"
+  type        = bool
+  default     = true
+}
+
+
+variable "name_prefix" {
+  description = "Prefix for resource names"
+  type        = string
+}
+
+variable "alb_internal" {
+  type        = bool
+  default     = false
+  description = "Whether the ALB is internal or external"
+}
+
+variable "alb_type" {
+  type        = string
+  default     = "application"
+  description = "Type of Load Balancer"
+}
+
+variable "alb_security_group_ids" {
+  type        = list(string)
+  description = "Security group IDs for the ALB"
+}
+
+variable "public_subnet_ids" {
+  type        = list(string)
+  description = "List of public subnet IDs"
+}
+
+variable "enable_alb_deletion_protection" {
+  type        = bool
+  default     = false
+  description = "Enable deletion protection on the ALB"
+}
+
+variable "target_port" {
+  type        = number
+  default     = 80
+}
+
+variable "target_protocol" {
+  type        = string
+  default     = "HTTP"
+}
+
+variable "vpc_id" {
+  type        = string
+}
+
+variable "target_type" {
+  type        = string
+  default     = "ip"
+}
+
+variable "health_check_path" {
+  type        = string
+  default     = "/"
+}
+
+variable "health_check_interval" {
+  type        = number
+  default     = 30
+}
+
+variable "health_check_timeout" {
+  type        = number
+  default     = 5
+}
+
+variable "healthy_threshold" {
+  type        = number
+  default     = 3
+}
+
+variable "unhealthy_threshold" {
+  type        = number
+  default     = 3
+}
+
+variable "health_check_matcher" {
+  type        = string
+  default     = "200-399"
+}
+
+variable "https_listener_port" {
+  type        = number
+  default     = 443
+}
+
+variable "https_listener_protocol" {
+  type        = string
+  default     = "HTTPS"
+}
+
+variable "ssl_policy" {
+  type        = string
+  default     = "ELBSecurityPolicy-2016-08"
+}
+
+variable "http_listener_port" {
+  type        = number
+  default     = 80
+}
+
+variable "http_listener_protocol" {
+  type        = string
+  default     = "HTTP"
+}
+
+variable "redirect_port" {
+  type        = string
+  default     = "443"
+}
+
+variable "redirect_protocol" {
+  type        = string
+  default     = "HTTPS"
+}
+
+variable "redirect_status_code" {
+  type        = string
+  default     = "HTTP_301"
+}
+
+variable "subnet_public_ip" {
+  type = bool
+  default = true
+  description = "map public ip on launch"
+  
+}
+
+variable "routing_cidr_block" {
+  type = string
+  default = "0.0.0.0/0"
+  description = "Internet access cidr block"
+  
+}
+
+variable "dynamo_billing_mode" {
+    type = string
+    default = "PAY_PER_REQUEST"
+    description = "dynamo table billing mode"
+}
+
+variable "dynamo_hash_key" {
+    type = string
+    default  = "LockID"
+    description = "dynamo table hash key"
 }

@@ -17,7 +17,7 @@ resource "aws_subnet" "public" {
   cidr_block              = var.public_subnet_cidrs[count.index]
   vpc_id                  = aws_vpc.this.id
   availability_zone       = var.azs[count.index]
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = var.subnet_public_ip
   tags = {
     Name = "${var.name_prefix}-public-subnet-${count.index}"
   }
@@ -38,7 +38,7 @@ resource "aws_route_table_association" "public_subnet" {
 
 resource "aws_route" "internet_access" {
   route_table_id         = aws_route_table.public.id
-  destination_cidr_block = "0.0.0.0/0"
+  destination_cidr_block = var.routing_cidr_block
   gateway_id             = aws_internet_gateway.this.id
 }
 
