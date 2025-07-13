@@ -12,3 +12,9 @@ output "ecs_service_name" {
   description = "The ECS Service Name"
   value       = aws_ecs_service.this.name
 }
+
+output "ecs_security_group_id" {
+  description = "ID of the ECS security group"
+  value       = aws_security_group.ecs_sg.id
+}
+

@@ -1,7 +1,7 @@
 
 
 module "vpc" {
-  source          = "./modules/vpc"
+  source          = local.vpc_module_source
   cidr_block      = var.vpc_cidr
   public_subnet_cidrs = var.public_subnet_cidrs
   azs             = var.azs
@@ -11,7 +11,7 @@ module "vpc" {
 }
 
 module "acm" {
-  source             = "./modules/acm"
+  source             = local.acm_module_source
 
   domain             = var.domain
   cloudflare_zone_id = var.cloudflare_zone_id
@@ -26,7 +26,7 @@ module "acm" {
 }
 
 module "alb" {
-  source                     = "./modules/alb"
+  source                     = local.alb_module_source
   name_prefix                = var.name_prefix
   internal                   = var.alb_internal
   load_balancer_type         = var.alb_type
@@ -59,14 +59,14 @@ module "alb" {
   redirect_status_code       = var.redirect_status_code
 }
 
-module "ecs_iam_roles" {
-  source      = "./modules/ecs_iam_roles"
+module "iam_roles" {
+  source      = local.iam_module_source
   name_prefix = var.name_prefix
 }
 
 
 module "ecs" {
-  source            = "./modules/ecs"
+  source            = local.ecs_module_source
   name_prefix       = var.name_prefix
   container_name    = var.container_name
   container_image   = var.container_image
@@ -83,9 +83,9 @@ module "ecs" {
 }
 
 module "cloudflare_dns" {
-  source             = "./modules/cloudflare_dns"
+  source             = local.cloudflare_module_source
   cloudflare_zone_id = var.cloudflare_zone_id
-  domain_name        = "tm"
+  domain_name        = var.domain
   target             = module.alb.alb_dns_name
   cloudflare_record_type = var.cloudflare_record_type
   cloudflare_record_ttl = var.cloudflare_record_ttl  
@@ -94,7 +94,7 @@ module "cloudflare_dns" {
 }
 
 module "backend" {
-  source              = "./modules/backend"
+  source              = local.backend_module_source
   bucket_name         = var.backend_bucket_name
   dynamodb_table_name = var.backend_dynamodb_table_name
   tags                = var.default_tags

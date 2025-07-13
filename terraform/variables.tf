@@ -259,3 +259,13 @@ variable "dynamo_hash_key" {
     default  = "LockID"
     description = "dynamo table hash key"
 }
+
+locals {
+  alb_module_source = "./modules/alb"
+  acm_module_source = "./modules/acm"
+  vpc_module_source = "./modules/vpc"
+  iam_module_source = "./modules/iam_roles"
+  ecs_module_source = "./modules/ecs"
+  cloudflare_module_source = "./modules/cloudflare_dns"
+  backend_module_source = "./modules/backend"
+}
