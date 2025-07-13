@@ -87,3 +87,10 @@ variable "default_tags" {
   }
 }
 
+variable "validation_method" {
+  type = string
+}
+
+variable "cloudflare_ttl" {
+  type = number
+}

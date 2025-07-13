@@ -1,10 +1,10 @@
 terraform {
   required_providers {
     aws = {
-      source = "hashicorp/aws"
+      source = local.aws_source
     }
     cloudflare = {
-      source = "cloudflare/cloudflare"
+      source = local.cloudflare_source
     }
   }
 }
@@ -13,7 +13,7 @@ terraform {
 resource "aws_acm_certificate" "cert" {
   provider          = aws
   domain_name       = var.domain
-  validation_method = "DNS"
+  validation_method = var.validation_method
 
   lifecycle {
     create_before_destroy = true
@@ -38,7 +38,7 @@ resource "cloudflare_record" "validation" {
   name    = each.value.name
   type    = each.value.type
   content   = each.value.value
-  ttl     = 120
+  ttl     = var.cloudflare_ttl
 }
 
 resource "aws_acm_certificate_validation" "cert_validation" {

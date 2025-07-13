@@ -15,6 +15,8 @@ module "acm" {
   cloudflare_zone_id = var.cloudflare_zone_id
   name_prefix        = var.name_prefix
   load_balancer_arn  = module.alb.alb_arn
+  validation_method  = var.validation_method
+  cloudflare_ttl     = var.cloudflare_ttl 
 
   providers = {
     aws = aws
