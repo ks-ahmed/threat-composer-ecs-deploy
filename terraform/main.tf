@@ -64,6 +64,7 @@ module "iam_roles" {
   name_prefix = var.name_prefix
   execution_role_name = var.execution_role_name
   task_role_name      = var.task_role_name
+  ecs_service_principal = var.ecs_service_principal
 
 }
 

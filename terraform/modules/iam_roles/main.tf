@@ -2,14 +2,14 @@ resource "aws_iam_role" "ecs_task_execution_role" {
   name = "${var.name_prefix}-${var.execution_role_name}"
 
   assume_role_policy = jsonencode({
-    Version = "2012-10-17"
+    Version = local.assume_role_version
     Statement = [
       {
-        Action = "sts:AssumeRole"
+        Action = local.assume_role_action
         Principal = {
-          Service = "ecs-tasks.amazonaws.com"
+          Service = var.ecs_service_principal
         }
-        Effect = "Allow"
+        Effect = local.assume_role_effect
         Sid    = ""
       }
     ]
@@ -25,14 +25,14 @@ resource "aws_iam_role" "ecs_task_role" {
   name = "${var.name_prefix}-${var.task_role_name}"
 
   assume_role_policy = jsonencode({
-    Version = "2012-10-17"
+    Version = local.assume_role_version
     Statement = [
       {
-        Action = "sts:AssumeRole"
+        Action = local.assume_role_action
         Principal = {
-          Service = "ecs-tasks.amazonaws.com"
+          Service = var.ecs_service_principal
         }
-        Effect = "Allow"
+        Effect = local.assume_role_effect
         Sid    = ""
       }
     ]

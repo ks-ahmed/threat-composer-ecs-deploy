@@ -269,3 +269,15 @@ locals {
   cloudflare_module_source = "./modules/cloudflare_dns"
   backend_module_source = "./modules/backend"
 }
+
+variable "execution_role_name" {
+  type        = string
+  description = "Name of the ECS execution role"
+  default     = "ecs-exec-role"
+}
+
+variable "task_role_name" {
+  type        = string
+  description = "Name of the ECS task role"
+  default     = "ecs-task-role"
+}
