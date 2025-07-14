@@ -30,13 +30,13 @@ module "alb" {
   name_prefix                = var.name_prefix
   internal                   = var.alb_internal
   load_balancer_type         = var.alb_type
-  security_group_ids         = var.alb_security_group_ids
-  subnet_ids                 = var.public_subnet_ids
+  subnet_ids                 = module.vpc.public_subnet_ids
   enable_deletion_protection = var.enable_alb_deletion_protection
 
   target_port                = var.target_port
   target_protocol            = var.target_protocol
-  vpc_id                     = var.vpc_id
+  vpc_id                     = module.vpc.vpc_id
+  tags                       = var.tags
   target_type                = var.target_type
 
   health_check_path          = var.health_check_path
@@ -78,7 +78,8 @@ module "ecs" {
 
   desired_count     = var.desired_count
   subnet_ids        = module.vpc.public_subnet_ids
-  security_group_ids = [module.ecs.ecs_security_group_id]
+  security_group_ids     = [module.ecs.ecs_security_group_id]
+  alb_security_group_id  = module.alb.alb_security_group_id
   target_group_arn  = module.alb.alb_target_group_arn
   load_balancer_arn = module.alb.alb_arn
   certificate_arn    = module.acm.certificate_arn

@@ -22,3 +22,8 @@ output "alb_listener_http_arn" {
   description = "ARN of the HTTP Listener"
   value       = aws_lb_listener.http.arn
 }
+
+output "alb_security_group_id" {
+  description = "Security Group ID for the ALB"
+  value       = aws_security_group.alb_sg.id
+}

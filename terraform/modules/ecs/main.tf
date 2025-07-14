@@ -42,6 +42,14 @@ resource "aws_security_group" "ecs_sg" {
     }
   }
 
+  ingress {
+    from_port       = var.container_port
+    to_port         = var.container_port
+    protocol        = "tcp"
+    security_groups = [var.alb_security_group_id]
+    description     = "Allow traffic from ALB"
+  }
+
   dynamic "egress" {
     for_each = var.egress_rules
     content {
@@ -56,6 +64,7 @@ resource "aws_security_group" "ecs_sg" {
     Name = "${var.name_prefix}-ecs-sg"
   }
 }
+
 
 
 resource "aws_ecs_service" "this" {

@@ -97,7 +97,7 @@ variable "cloudflare_record_type" {
 variable "cloudflare_record_ttl" {
   description = "TTL for the DNS record"
   type        = number
-  default     = 300
+  default     = 1
 }
 
 variable "cloudflare_record_proxied" {
@@ -118,16 +118,6 @@ variable "alb_type" {
   description = "Type of Load Balancer"
 }
 
-variable "alb_security_group_ids" {
-  type        = list(string)
-  description = "Security group IDs for the ALB"
-}
-
-variable "public_subnet_ids" {
-  type        = list(string)
-  description = "List of public subnet IDs"
-}
-
 variable "enable_alb_deletion_protection" {
   type        = bool
   default     = false
@@ -142,10 +132,6 @@ variable "target_port" {
 variable "target_protocol" {
   type        = string
   default     = "HTTP"
-}
-
-variable "vpc_id" {
-  type        = string
 }
 
 variable "target_type" {

@@ -1,11 +1,11 @@
 terraform {
-#  backend "s3" {
-#    bucket         = "vettlyai-tf-state-prod"
-#    key            = "vettlyai/terraform.tfstate"
-#    region         = "eu-west-2"
-#    encrypt        = true
+  backend "s3" {
+    bucket         = "vettlyai-tf-state-prod"
+    key            = "vettlyai/terraform.tfstate"
+    region         = "eu-west-2"
+    encrypt        = true
    
-#  }
+  }
 
   required_providers {
     aws = {

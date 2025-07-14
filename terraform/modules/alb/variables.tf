@@ -15,10 +15,6 @@ variable "load_balancer_type" {
   default     = "application"
 }
 
-variable "security_group_ids" {
-  description = "Security group IDs attached to the ALB"
-  type        = list(string)
-}
 
 variable "subnet_ids" {
   description = "Subnets for the ALB"
@@ -32,9 +28,10 @@ variable "enable_deletion_protection" {
 }
 
 variable "vpc_id" {
-  description = "VPC ID for the target group"
+  description = "The VPC ID to attach the ALB security group"
   type        = string
 }
+
 
 variable "target_port" {
   description = "Port for target group"
@@ -139,3 +136,10 @@ locals {
   default_action_https = "forward"
   default_action_http = "redirect"
 }
+
+variable "tags" {
+  description = "Tags to apply to ALB resources"
+  type        = map(string)
+  default     = {}
+}
+

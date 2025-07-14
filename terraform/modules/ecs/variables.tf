@@ -181,3 +181,8 @@ variable "task_role_arn" {
   description = "ARN of the ECS task role"
   type        = string
 }
+
+variable "alb_security_group_id" {
+  description = "Security group ID of the ALB"
+  type        = string
+}
