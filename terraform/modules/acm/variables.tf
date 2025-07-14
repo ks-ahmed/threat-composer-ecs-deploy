@@ -27,8 +27,3 @@ variable "cloudflare_ttl" {
   default = 120
 
 }
-
-locals {
-  aws_source = "hashicorp/aws"
-  cloudflare_source = "cloudflare/cloudflare"
-}

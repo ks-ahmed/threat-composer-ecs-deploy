@@ -1,7 +1,7 @@
 
 
 module "vpc" {
-  source          = local.vpc_module_source
+  source          = "./modules/vpc"
   cidr_block      = var.vpc_cidr
   public_subnet_cidrs = var.public_subnet_cidrs
   azs             = var.azs
@@ -11,7 +11,7 @@ module "vpc" {
 }
 
 module "acm" {
-  source             = local.acm_module_source
+  source             = "./modules/acm"
 
   domain             = var.domain
   cloudflare_zone_id = var.cloudflare_zone_id
@@ -26,7 +26,7 @@ module "acm" {
 }
 
 module "alb" {
-  source                     = local.alb_module_source
+  source                     = "./modules/alb"
   name_prefix                = var.name_prefix
   internal                   = var.alb_internal
   load_balancer_type         = var.alb_type
@@ -60,17 +60,16 @@ module "alb" {
 }
 
 module "iam_roles" {
-  source      = local.iam_module_source
+  source      = "./modules/iam_roles"
   name_prefix = var.name_prefix
   execution_role_name = var.execution_role_name
   task_role_name      = var.task_role_name
-  ecs_service_principal = var.ecs_service_principal
 
 }
 
 
 module "ecs" {
-  source            = local.ecs_module_source
+  source            = "./modules/ecs"
   name_prefix       = var.name_prefix
   container_name    = var.container_name
   container_image   = var.container_image
@@ -87,7 +86,7 @@ module "ecs" {
 }
 
 module "cloudflare_dns" {
-  source             = local.cloudflare_module_source
+  source             = "./modules/cloudflare_dns"
   cloudflare_zone_id = var.cloudflare_zone_id
   domain_name        = var.domain
   target             = module.alb.alb_dns_name

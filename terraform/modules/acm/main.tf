@@ -1,10 +1,10 @@
 terraform {
   required_providers {
     aws = {
-      source = local.aws_source
+      source = "hashicorp/aws"
     }
     cloudflare = {
-      source = local.cloudflare_source
+      source = "cloudflare/cloudflare"
     }
   }
 }
