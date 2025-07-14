@@ -1,36 +1,34 @@
 variable "bucket_name" {
   type        = string
-  description = "S3 bucket name for storing Terraform state"
-}
-
-variable "dynamodb_table_name" {
-  type        = string
-  description = "DynamoDB table name for state locking"
+  description = "Name of the S3 bucket for Terraform state."
 }
 
 variable "tags" {
   type        = map(string)
+  description = "Tags to apply to resources."
   default     = {}
-  description = "Tags to apply to resources"
 }
 
-variable "dynamo_billing_mode" {
-    type = string
-    default = "PAY_PER_REQUEST"
-    description = "dynamo table billing mode"
+variable "force_destroy" {
+  type        = bool
+  default     = false
+  description = "Whether to allow force destroy on the S3 bucket."
 }
 
-variable "dynamo_hash_key" {
-    type = string
-    default  = "LockID"
-    description = "dynamo table hash key"
+variable "prevent_destroy" {
+  type        = bool
+  default     = true
+  description = "Prevent the bucket from being accidentally destroyed."
 }
 
-locals {
-  lifecycle_prevent_destroy = true
-  versioning_configuration = "Enabled"
-  sse_algorithm = "AES256"
-  attribute_name = "LockID"
-  attribute_type = "S"
+variable "object_lock_mode" {
+  type        = string
+  default     = "GOVERNANCE"
+  description = "Object lock retention mode. Options: GOVERNANCE or COMPLIANCE"
+}
 
+variable "object_lock_retention_days" {
+  type        = number
+  default     = 7
+  description = "Number of days to retain objects in the bucket using object lock."
 }

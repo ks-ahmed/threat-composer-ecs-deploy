@@ -98,11 +98,12 @@ module "cloudflare_dns" {
 }
 
 module "backend" {
-  source              = local.backend_module_source
-  bucket_name         = var.backend_bucket_name
-  dynamodb_table_name = var.backend_dynamodb_table_name
-  tags                = var.default_tags
-  dynamo_billing_mode = var.dynamo_billing_mode
-  dynamo_hash_key     = var.dynamo_hash_key
+  source = "./modules/backend"
 
+  bucket_name                = var.backend_bucket_name
+  tags                       = var.tags
+  prevent_destroy            = true
+  object_lock_mode           = "GOVERNANCE"
+  object_lock_retention_days = 7
 }
+

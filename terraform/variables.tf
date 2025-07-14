@@ -21,7 +21,7 @@ variable "domain" {
 }
 
 variable "name_prefix" {
-  description = "Name prefix for all resources"
+  description = "Prefix for resource names"
   type        = string
   default     = "myapp"
 }
@@ -69,12 +69,7 @@ variable "desired_count" {
 
 variable "backend_bucket_name" {
   type        = string
-  description = "Name of the S3 bucket for Terraform state"
-}
-
-variable "backend_dynamodb_table_name" {
-  type        = string
-  description = "Name of the DynamoDB table for state locking"
+  description = "The name of the S3 bucket to store Terraform state."
 }
 
 variable "default_tags" {
@@ -109,12 +104,6 @@ variable "cloudflare_record_proxied" {
   description = "Whether Cloudflare should proxy this record"
   type        = bool
   default     = true
-}
-
-
-variable "name_prefix" {
-  description = "Prefix for resource names"
-  type        = string
 }
 
 variable "alb_internal" {
@@ -235,39 +224,15 @@ variable "redirect_status_code" {
 }
 
 variable "subnet_public_ip" {
-  type = bool
-  default = true
-  description = "map public ip on launch"
-  
+  type        = bool
+  default     = true
+  description = "Assign public IP on launch"
 }
 
 variable "routing_cidr_block" {
-  type = string
-  default = "0.0.0.0/0"
-  description = "Internet access cidr block"
-  
-}
-
-variable "dynamo_billing_mode" {
-    type = string
-    default = "PAY_PER_REQUEST"
-    description = "dynamo table billing mode"
-}
-
-variable "dynamo_hash_key" {
-    type = string
-    default  = "LockID"
-    description = "dynamo table hash key"
-}
-
-locals {
-  alb_module_source = "./modules/alb"
-  acm_module_source = "./modules/acm"
-  vpc_module_source = "./modules/vpc"
-  iam_module_source = "./modules/iam_roles"
-  ecs_module_source = "./modules/ecs"
-  cloudflare_module_source = "./modules/cloudflare_dns"
-  backend_module_source = "./modules/backend"
+  type        = string
+  default     = "0.0.0.0/0"
+  description = "CIDR block for internet access"
 }
 
 variable "execution_role_name" {
@@ -280,4 +245,20 @@ variable "task_role_name" {
   type        = string
   description = "Name of the ECS task role"
   default     = "ecs-task-role"
+}
+
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = "Tags applied to all resources."
+}
+
+locals {
+  alb_module_source        = "./modules/alb"
+  acm_module_source        = "./modules/acm"
+  vpc_module_source        = "./modules/vpc"
+  iam_module_source        = "./modules/iam_roles"
+  ecs_module_source        = "./modules/ecs"
+  cloudflare_module_source = "./modules/cloudflare_dns"
+  backend_module_source    = "./modules/backend"
 }

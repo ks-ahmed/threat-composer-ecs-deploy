@@ -1,8 +1,11 @@
 resource "aws_s3_bucket" "terraform_state" {
   bucket = var.bucket_name
+  force_destroy = var.force_destroy
+
+  object_lock_enabled = true
 
   lifecycle {
-    prevent_destroy = local.lifecycle_prevent_destroy
+    prevent_destroy = var.prevent_destroy
   }
 
   tags = var.tags
@@ -12,7 +15,18 @@ resource "aws_s3_bucket_versioning" "this" {
   bucket = aws_s3_bucket.terraform_state.id
 
   versioning_configuration {
-    status = local.versioning_configuration
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_object_lock_configuration" "this" {
+  bucket = aws_s3_bucket.terraform_state.id
+
+  rule {
+    default_retention {
+      mode = var.object_lock_mode
+      days = var.object_lock_retention_days
+    }
   }
 }
 
@@ -21,26 +35,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm = local.sse_algorithm
+      sse_algorithm = "AES256"
     }
   }
-}
-
-
-resource "aws_dynamodb_table" "terraform_locks" {
-  name         = var.dynamodb_table_name
-  billing_mode = var.dynamo_billing_mode
-  hash_key     = var.dynamo_hash_key
-
-  attribute {
-    name = local.attribute_name
-    type = local.attribute_type
-  }
-
-  lifecycle {
-    prevent_destroy = local.lifecycle_prevent_destroy
-  }
-
-
-  tags = var.tags
 }

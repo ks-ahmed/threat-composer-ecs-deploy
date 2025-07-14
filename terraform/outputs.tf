@@ -30,8 +30,8 @@ output "backend_bucket_name" {
   value = module.backend.bucket_name
 }
 
-output "backend_dynamodb_table_name" {
-  value = module.backend.dynamodb_table_name
+output "s3_object_lock_enabled" {
+  value = module.backend.object_lock_enabled
 }
 
 output "target_group_arn" {
@@ -58,5 +58,3 @@ output "ecs_task_role_arn" {
   description = "ARN of the ECS task role from the IAM module"
   value       = module.iam_roles.task_role_arn
 }
-
-
