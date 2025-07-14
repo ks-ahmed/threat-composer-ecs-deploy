@@ -1,15 +1,16 @@
 name: Terraform Initialize & Plan
 
+
 on:
-  workflow_run:
-    workflows: ["Build and Push Docker Image"]
-    types:
-      - completed
+  workflow_call:
+    inputs:
+      image_uri:
+        required: true
+        type: string
 
 
 jobs:
   terraform-plan:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
 
@@ -53,6 +54,7 @@ jobs:
         working-directory: ./terraform
         run: terraform init -input=false
 
+
       - name: Terraform Plan
         working-directory: ./terraform
         run: |
@@ -60,8 +62,15 @@ jobs:
             -lock=false \
             -var="backend_bucket_name=vettlyai-tf-state-prod" \
             -var="backend_dynamodb_table_name=terraform-locks" \
-            -var="container_image=PLACEHOLDER_FOR_IMAGE_URI" \
+            -var="container_image=${{ inputs.image_uri }}" \
             -var="domain=tm.vettlyai.com" \
             -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
             -var="cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" \
             -out=tfplan
+
+  
+  call-terraform-apply:
+    needs: terraform-plan
+    uses: ./.github/workflows/terraform-apply.yaml
+    with:
+      image_uri: ${{ inputs.image_uri }}

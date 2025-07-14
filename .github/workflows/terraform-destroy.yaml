@@ -1,6 +1,5 @@
 name: Terraform Destroy
 
-
 on:
   workflow_dispatch:
     inputs:
@@ -35,7 +34,7 @@ jobs:
       - name: Terraform Init
         working-directory: ./terraform
         run: terraform init -input=false
-      
+
 
       - name: Terraform Destroy Selected Modules
         working-directory: ./terraform

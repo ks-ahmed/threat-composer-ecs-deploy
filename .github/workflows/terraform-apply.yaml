@@ -1,15 +1,15 @@
 name: Terraform Apply
 
 on:
-  workflow_run:
-    workflows: ["Terraform Initialize & Plan"]
-    types:
-      - completed
+  workflow_call:
+    inputs:
+      image_uri:
+        required: true
+        type: string
 
 
 jobs:
   terraform-apply:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
 
@@ -41,7 +41,7 @@ jobs:
           terraform apply -lock=false -auto-approve \
             -var="backend_bucket_name=vettlyai-tf-state-prod" \
             -var="backend_dynamodb_table_name=terraform-locks" \
-            -var="container_image=PLACEHOLDER_FOR_IMAGE_URI" \
+            -var="container_image=${{ inputs.image_uri }}" \
             -var="domain=tm.vettlyai.com" \
             -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
             -var="cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}"

@@ -8,7 +8,7 @@ on:
         required: true
         default: "start"
 
-      
+
 env:
   AWS_REGION: eu-west-2
   ECR_REPOSITORY: tm-app
@@ -17,8 +17,11 @@ env:
 
 jobs:
   build-and-push:
-    name: Build & Push Docker Image to ECR
     runs-on: ubuntu-latest
+
+
+    outputs:
+      image_uri: ${{ steps.show-image.outputs.image_uri }}
 
 
     steps:
@@ -48,12 +51,12 @@ jobs:
 
 
       - name: Show Image URL
-        run: echo "Pushed image to ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}"
+        id: show-image
+        run: echo "image_uri=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
 
-      - name: Scan Docker image for vulnerabilities with Trivy
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
-          format: table
-          exit-code: 0  # Change to 1 if you want the pipeline to fail on vulnerabilities
+  call-terraform-plan:
+    needs: build-and-push
+    uses: ./.github/workflows/terraform-init-plan.yaml
+    with:
+      image_uri: ${{ needs.build-and-push.outputs.image_uri }}
