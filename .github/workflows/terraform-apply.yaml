@@ -1,19 +1,17 @@
 name: Terraform Apply
 
-
 on:
-  workflow_dispatch:
-    inputs:
-      image_uri:
-        description: 'Docker Image URI (from ECR)'
-        required: true
-        type: string
+  workflow_run:
+    workflows: ["Terraform Initialize & Plan"]
+    types:
+      - completed
 
 
 jobs:
   terraform-apply:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-    
+
 
     steps:
       - name: Checkout code
@@ -43,7 +41,7 @@ jobs:
           terraform apply -lock=false -auto-approve \
             -var="backend_bucket_name=vettlyai-tf-state-prod" \
             -var="backend_dynamodb_table_name=terraform-locks" \
-            -var="container_image=${{ github.event.inputs.image_uri }}" \
+            -var="container_image=PLACEHOLDER_FOR_IMAGE_URI" \
             -var="domain=tm.vettlyai.com" \
             -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
             -var="cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}"

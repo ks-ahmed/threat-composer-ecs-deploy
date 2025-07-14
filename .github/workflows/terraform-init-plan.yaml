@@ -1,23 +1,22 @@
 name: Terraform Initialize & Plan
 
-
 on:
-  workflow_dispatch:
-    inputs:
-      image_uri:
-        description: 'Docker Image URI (from ECR)'
-        required: true
-        type: string
+  workflow_run:
+    workflows: ["Build and Push Docker Image"]
+    types:
+      - completed
 
 
 jobs:
   terraform-plan:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -30,14 +29,17 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+
       - name: Install TFLint
         run: |
           curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
           tflint --init
 
+
       - name: Run TFLint
         working-directory: ./terraform
         run: tflint --recursive
+
 
       - name: Run Checkov (Terraform security scan)
         uses: bridgecrewio/checkov-action@v12.2455.0
@@ -51,7 +53,6 @@ jobs:
         working-directory: ./terraform
         run: terraform init -input=false
 
-
       - name: Terraform Plan
         working-directory: ./terraform
         run: |
@@ -59,9 +60,8 @@ jobs:
             -lock=false \
             -var="backend_bucket_name=vettlyai-tf-state-prod" \
             -var="backend_dynamodb_table_name=terraform-locks" \
-            -var="container_image=${{ github.event.inputs.image_uri }}" \
+            -var="container_image=PLACEHOLDER_FOR_IMAGE_URI" \
             -var="domain=tm.vettlyai.com" \
             -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
             -var="cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" \
             -out=tfplan
-
