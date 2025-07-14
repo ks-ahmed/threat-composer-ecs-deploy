@@ -5,7 +5,7 @@ resource "aws_s3_bucket" "terraform_state" {
   object_lock_enabled = true
 
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 
   tags = var.tags

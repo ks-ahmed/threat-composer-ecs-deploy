@@ -10,11 +10,6 @@ variable "target" {
   type = string
 }
 
-locals {
-  aws_source = "hashicorp/aws"
-  cloudflare_source = "cloudflare/cloudflare"
-}
-
 variable "cloudflare_record_type" {
   type = string
   default = "CNAME"

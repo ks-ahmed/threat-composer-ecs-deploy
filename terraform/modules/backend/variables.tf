@@ -15,12 +15,6 @@ variable "force_destroy" {
   description = "Whether to allow force destroy on the S3 bucket."
 }
 
-variable "prevent_destroy" {
-  type        = bool
-  default     = true
-  description = "Prevent the bucket from being accidentally destroyed."
-}
-
 variable "object_lock_mode" {
   type        = string
   default     = "GOVERNANCE"
