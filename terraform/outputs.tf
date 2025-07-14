@@ -15,11 +15,11 @@ output "alb_dns_name" {
 }
 
 output "ecs_cluster_id" {
-  value = module.ecs.cluster_id
+  value = module.ecs.ecs_cluster_id
 }
 
 output "ecs_service_name" {
-  value = module.ecs.service_name
+  value = module.ecs.ecs_service_name
 }
 
 output "alb_arn" {
