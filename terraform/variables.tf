@@ -50,7 +50,7 @@ variable "container_name" {
   default     = "react-app"
 }
 
-variable "container_image" {
+variable "image_url" {
   description = "Container image URL (ECR or Docker Hub)"
   type        = string
 }

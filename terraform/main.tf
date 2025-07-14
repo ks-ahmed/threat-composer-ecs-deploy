@@ -72,7 +72,7 @@ module "ecs" {
   source            = "./modules/ecs"
   name_prefix       = var.name_prefix
   container_name    = var.container_name
-  container_image   = var.container_image
+  image_url         = var.image_url
   container_port    = var.container_port
   vpc_id            = module.vpc.vpc_id
 

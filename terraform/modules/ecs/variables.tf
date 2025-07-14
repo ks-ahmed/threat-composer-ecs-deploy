@@ -32,7 +32,7 @@ variable "container_name" {
   type        = string
 }
 
-variable "container_image" {
+variable "image_url" {
   description = "Container image URI"
   type        = string
 }
