@@ -78,10 +78,13 @@ module "ecs" {
 
   desired_count     = var.desired_count
   subnet_ids        = module.vpc.public_subnet_ids
-  security_group_ids = [aws_security_group.ecs_sg.id]
-  target_group_arn  = module.alb.target_group_arn
+  security_group_ids = [module.ecs.ecs_security_group_id]
+  target_group_arn  = module.alb.alb_target_group_arn
   load_balancer_arn = module.alb.alb_arn
   certificate_arn    = module.acm.certificate_arn
+  execution_role_arn = module.iam_roles.execution_role_arn
+  task_role_arn      = module.iam_roles.task_role_arn
+
   
 }
 
@@ -101,7 +104,6 @@ module "backend" {
 
   bucket_name                = var.backend_bucket_name
   tags                       = var.tags
-  prevent_destroy            = true
   object_lock_mode           = "GOVERNANCE"
   object_lock_retention_days = 7
 }

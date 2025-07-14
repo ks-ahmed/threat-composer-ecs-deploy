@@ -171,3 +171,13 @@ variable "egress_rules" {
     }
   ]
 }
+
+variable "execution_role_arn" {
+  description = "ARN of the ECS execution role"
+  type        = string
+}
+
+variable "task_role_arn" {
+  description = "ARN of the ECS task role"
+  type        = string
+}

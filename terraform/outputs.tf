@@ -36,7 +36,7 @@ output "s3_object_lock_enabled" {
 
 output "target_group_arn" {
   description = "Target Group ARN"
-  value       = module.alb.target_group_arn
+  value       = module.alb.alb_target_group_arn
 }
 
 output "ecs_task_definition_arn" {
