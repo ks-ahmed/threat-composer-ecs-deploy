@@ -30,6 +30,22 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      - name: Install TFLint
+        run: |
+          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+          tflint --init
+
+      - name: Run TFLint
+        working-directory: ./terraform
+        run: tflint --recursive
+
+      - name: Run Checkov (Terraform security scan)
+        uses: bridgecrewio/checkov-action@v12.2455.0
+        with:
+          directory: ./terraform
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
       - name: Terraform Init
         working-directory: ./terraform
