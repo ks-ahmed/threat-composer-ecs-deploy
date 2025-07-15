@@ -14,9 +14,17 @@ resource "aws_lb" "this" {
   internal                   = var.internal
   load_balancer_type         = var.load_balancer_type
   security_groups            = [aws_security_group.alb_sg.id]
-
   subnets                    = var.subnet_ids
   enable_deletion_protection = var.enable_deletion_protection
+
+  enable_cross_zone_load_balancing = var.enable_cross_zone_load_balancing
+
+  access_logs {
+    bucket  = var.access_logs_bucket       
+    prefix  = var.access_logs_prefix       
+    enabled = true
+  }
+
 
   tags = {
     Name = "${var.name_prefix}-alb"
@@ -70,28 +78,31 @@ resource "aws_lb_listener" "http" {
 
 resource "aws_security_group" "alb_sg" {
   name        = "${var.name_prefix}-alb-sg"
-  description = "Allow HTTP and HTTPS inbound traffic"
+  description = var.security_group_description
   vpc_id      = var.vpc_id
 
   ingress {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.http_ingress_cidr_blocks
+    description = var.http_ingress_description
   }
 
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.https_ingress_cidr_blocks
+    description = var.https_ingress_description
   }
 
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.egress_cidr_blocks
+    description = var.egress_description
   }
 
   tags = var.tags

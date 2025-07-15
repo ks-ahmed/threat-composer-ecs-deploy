@@ -16,7 +16,6 @@ module "acm" {
   domain             = var.domain
   cloudflare_zone_id = var.cloudflare_zone_id
   name_prefix        = var.name_prefix
-  load_balancer_arn  = module.alb.alb_arn
   validation_method  = var.validation_method
   cloudflare_ttl     = var.cloudflare_ttl 
 
@@ -78,7 +77,6 @@ module "ecs" {
 
   desired_count     = var.desired_count
   subnet_ids        = module.vpc.public_subnet_ids
-  security_group_ids     = [module.ecs.ecs_security_group_id]
   alb_security_group_id  = module.alb.alb_security_group_id
   target_group_arn  = module.alb.alb_target_group_arn
   load_balancer_arn = module.alb.alb_arn
@@ -86,7 +84,7 @@ module "ecs" {
   execution_role_arn = module.iam_roles.execution_role_arn
   task_role_arn      = module.iam_roles.task_role_arn
 
-  
+
 }
 
 module "cloudflare_dns" {

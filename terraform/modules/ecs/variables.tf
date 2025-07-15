@@ -105,9 +105,9 @@ variable "default_action_type" {
 }
 
 variable "assign_public_ip" {
-  description = "Whether to assign a public IP"
+  description = "Assign public IP to ECS task"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "vpc_id" {
@@ -123,7 +123,7 @@ variable "sg_description" {
 
 
 variable "ingress_rules" {
-  description = "List of ingress rules for ECS SG"
+  description = "List of ingress rules for the ECS security group"
   type = list(object({
     description = string
     from_port   = number
@@ -133,25 +133,26 @@ variable "ingress_rules" {
   }))
   default = [
     {
-      description = "Allow HTTP"
+      description = "Allow HTTP from VPC CIDR"
       from_port   = 80
       to_port     = 80
       protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
+      cidr_blocks = ["10.0.0.0/16"]
     },
     {
-      description = "Allow HTTPS"
+      description = "Allow HTTPS from VPC CIDR"
       from_port   = 443
       to_port     = 443
       protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
+      cidr_blocks = ["10.0.0.0/16"]
     }
   ]
 }
 
 variable "egress_rules" {
-  description = "List of egress rules for ECS SG"
+  description = "List of egress rules for the ECS security group"
   type = list(object({
+    description = string
     from_port   = number
     to_port     = number
     protocol    = string
@@ -159,6 +160,7 @@ variable "egress_rules" {
   }))
   default = [
     {
+      description = "Allow all outbound traffic"
       from_port   = 0
       to_port     = 0
       protocol    = "-1"
@@ -166,6 +168,19 @@ variable "egress_rules" {
     }
   ]
 }
+
+variable "alb_ingress_protocol" {
+  description = "Protocol for ALB ingress traffic"
+  type        = string
+  default     = "tcp"
+}
+
+variable "alb_ingress_description" {
+  description = "Description for ALB ingress rule"
+  type        = string
+  default     = "Allow traffic from ALB"
+}
+
 
 variable "execution_role_arn" {
   description = "ARN of the ECS execution role"
@@ -181,3 +196,22 @@ variable "alb_security_group_id" {
   description = "Security group ID of the ALB"
   type        = string
 }
+
+variable "enable_container_insights" {
+  description = "Enable CloudWatch Container Insights for ECS Cluster"
+  type        = bool
+  default     = true
+}
+
+variable "container_insights_name" {
+  description = "Name of the ECS cluster setting"
+  type        = string
+  default     = "containerInsights"
+}
+
+variable "container_insights_value" {
+  description = "Value for the ECS cluster setting"
+  type        = string
+  default     = "enabled"
+}
+

@@ -143,3 +143,62 @@ variable "tags" {
   default     = {}
 }
 
+variable "enable_cross_zone_load_balancing" {
+  description = "Enable cross-zone load balancing"
+  type        = bool
+  default     = true
+}
+
+variable "access_logs_bucket" {
+  description = "S3 bucket name to store ALB access logs"
+  type        = string
+  default     = ""  
+}
+
+variable "access_logs_prefix" {
+  description = "Prefix for ALB access logs in the bucket"
+  type        = string
+  default     = "alb-logs/"
+}
+
+variable "security_group_description" {
+  description = "Description for the security group"
+  type        = string
+  default     = "Allow HTTP and HTTPS inbound traffic"
+}
+
+variable "http_ingress_cidr_blocks" {
+  description = "List of CIDR blocks allowed to access HTTP (port 80)"
+  type        = list(string)
+  default     = ["203.0.113.0/24"]
+}
+
+variable "https_ingress_cidr_blocks" {
+  description = "List of CIDR blocks allowed to access HTTPS (port 443)"
+  type        = list(string)
+  default     = ["203.0.113.0/24"]
+}
+
+variable "http_ingress_description" {
+  description = "Description for HTTP ingress rule"
+  type        = string
+  default     = "Allow HTTP from trusted CIDR"
+}
+
+variable "https_ingress_description" {
+  description = "Description for HTTPS ingress rule"
+  type        = string
+  default     = "Allow HTTPS from trusted CIDR"
+}
+
+variable "egress_cidr_blocks" {
+  description = "CIDR blocks allowed for outbound traffic"
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
+variable "egress_description" {
+  description = "Description for egress rule"
+  type        = string
+  default     = "Allow all outbound traffic"
+}

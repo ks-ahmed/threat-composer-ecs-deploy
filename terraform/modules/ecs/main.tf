@@ -11,6 +11,14 @@ terraform {
 
 resource "aws_ecs_cluster" "this" {
   name = "${var.name_prefix}-ecs-cluster"
+
+  dynamic "setting" {
+    for_each = var.enable_container_insights ? [1] : []
+    content {
+      name  = var.container_insights_name
+      value = var.container_insights_value
+    }
+  }
 }
 
 resource "aws_ecs_task_definition" "this" {
@@ -29,9 +37,10 @@ resource "aws_ecs_task_definition" "this" {
       name      = var.container_name
       image     = var.image_url
       essential = true
+      readonlyRootFilesystem = true
       portMappings = [{
-        containerPort = var.container_port
-        protocol      = var.container_port_protocol
+      containerPort = var.container_port
+      protocol      = var.container_port_protocol
       }]
     }
   ])
@@ -56,14 +65,15 @@ resource "aws_security_group" "ecs_sg" {
   ingress {
     from_port       = var.container_port
     to_port         = var.container_port
-    protocol        = "tcp"
+    protocol        = var.alb_ingress_protocol
     security_groups = [var.alb_security_group_id]
-    description     = "Allow traffic from ALB"
+    description     = var.alb_ingress_description
   }
 
   dynamic "egress" {
     for_each = var.egress_rules
     content {
+      description = egress.value.description
       from_port   = egress.value.from_port
       to_port     = egress.value.to_port
       protocol    = egress.value.protocol
@@ -75,7 +85,6 @@ resource "aws_security_group" "ecs_sg" {
     Name = "${var.name_prefix}-ecs-sg"
   }
 }
-
 
 
 resource "aws_ecs_service" "this" {
