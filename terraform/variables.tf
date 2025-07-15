@@ -72,14 +72,6 @@ variable "backend_bucket_name" {
   description = "The name of the S3 bucket to store Terraform state."
 }
 
-variable "default_tags" {
-  type = map(string)
-  default = {
-    Environment = "infrastructure"
-    ManagedBy   = "Terraform"
-  }
-}
-
 variable "validation_method" {
   type        = string
 }
@@ -239,12 +231,3 @@ variable "tags" {
   description = "Tags applied to all resources."
 }
 
-locals {
-  alb_module_source        = "./modules/alb"
-  acm_module_source        = "./modules/acm"
-  vpc_module_source        = "./modules/vpc"
-  iam_module_source        = "./modules/iam_roles"
-  ecs_module_source        = "./modules/ecs"
-  cloudflare_module_source = "./modules/cloudflare_dns"
-  backend_module_source    = "./modules/backend"
-}

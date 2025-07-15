@@ -1,4 +1,8 @@
 terraform {
+  required_version = ">= 1.3.0"
+}
+
+terraform {
   backend "s3" {
     bucket         = "vettlyai-tf-state-prod"
     key            = "vettlyai/terraform.tfstate"

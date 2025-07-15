@@ -71,11 +71,6 @@ variable "subnet_ids" {
   type        = list(string)
 }
 
-variable "security_group_ids" {
-  description = "List of security group IDs for ECS tasks"
-  type        = list(string)
-}
-
 variable "target_group_arn" {
   description = "ARN of the ALB target group"
   type        = string
