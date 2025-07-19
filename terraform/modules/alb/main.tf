@@ -1,109 +1,70 @@
-terraform {
-  required_version = ">= 1.3.0"
+resource "aws_security_group" "alb_sg" {
+  name        = "${var.name_prefix}-alb-sg"
+  description = "Security group for ALB"
+  vpc_id      = var.vpc_id
 
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
+  ingress {
+    description = "Allow HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "Allow HTTPS"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    description = "Allow all outbound"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
 resource "aws_lb" "this" {
-  name                       = "${var.name_prefix}-alb"
-  internal                   = var.internal
-  load_balancer_type         = var.load_balancer_type
-  security_groups            = [aws_security_group.alb_sg.id]
-  subnets                    = var.subnet_ids
-  enable_deletion_protection = var.enable_deletion_protection
-
-  enable_cross_zone_load_balancing = var.enable_cross_zone_load_balancing
-
-  access_logs {
-    bucket  = var.access_logs_bucket       
-    prefix  = var.access_logs_prefix       
-    enabled = true
-  }
-
-
-  tags = {
-    Name = "${var.name_prefix}-alb"
-  }
+  name               = "${var.name_prefix}-alb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.alb_sg.id]
+  subnets            = var.public_subnet_ids
 }
 
-resource "aws_lb_target_group" "this" {
-  name         = "${var.name_prefix}-tg"
-  port         = var.target_port
-  protocol     = var.target_protocol
-  vpc_id       = var.vpc_id
-  target_type  = var.target_type
+resource "aws_lb_target_group" "ecs_tg" {
+  name        = "${var.name_prefix}-tg"
+  port        = var.target_port
+  protocol    = "HTTP"
+  vpc_id      = var.vpc_id
+  target_type = "ip"
 
   health_check {
-    path                = var.health_check_path
-    interval            = var.health_check_interval
-    timeout             = var.health_check_timeout
-    healthy_threshold   = var.healthy_threshold
-    unhealthy_threshold = var.unhealthy_threshold
-    matcher             = var.health_check_matcher
-  }
-}
-
-resource "aws_lb_listener" "https" {
-  load_balancer_arn = aws_lb.this.arn
-  port              = var.https_listener_port
-  protocol          = var.https_listener_protocol
-  ssl_policy        = var.ssl_policy
-  certificate_arn   = var.certificate_arn
-
-  default_action {
-    type             = local.default_action_https
-    target_group_arn = aws_lb_target_group.this.arn
+    path                = "/"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    matcher             = "200"
   }
 }
 
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.this.arn
-  port              = var.http_listener_port
-  protocol          = var.http_listener_protocol
+  port              = 80
+  protocol          = "HTTP"
 
   default_action {
-    type = local.default_action_http
+    type = "redirect"
     redirect {
-      port        = var.redirect_port
-      protocol    = var.redirect_protocol
-      status_code = var.redirect_status_code
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
     }
   }
 }
 
-resource "aws_security_group" "alb_sg" {
-  name        = "${var.name_prefix}-alb-sg"
-  description = var.security_group_description
-  vpc_id      = var.vpc_id
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = var.http_ingress_cidr_blocks
-    description = var.http_ingress_description
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = var.https_ingress_cidr_blocks
-    description = var.https_ingress_description
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = var.egress_cidr_blocks
-    description = var.egress_description
-  }
-
-  tags = var.tags
-}

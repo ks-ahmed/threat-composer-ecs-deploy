@@ -1,233 +1,57 @@
-variable "aws_region" {
-  description = "AWS region for ECS, ALB and Backend"
+variable "vpc_cidr" {
   type        = string
-  default     = "eu-west-2"
+  description = "CIDR block for the VPC"
+}
+
+variable "aws_region" {
+    type = string
+    description = "AWS Region for my VPC"
+  
+}
+
+variable "domain_name" {
+  type        = string
+  description = "Domain name for HTTPS"
+}
+
+variable "name_prefix" {
+  type        = string
+  description = "Prefix used for naming AWS resources"
+}
+
+variable "container_image" {
+  type        = string
+  description = "Docker image URI for ECS task"
+}
+
+variable "container_port" {
+  type        = number
+  description = "Port exposed by your ECS container"
+}
+
+variable "desired_count" {
+  type        = number
+  description = "Number of ECS tasks to run"
+  default     = 2
 }
 
 variable "cloudflare_zone_id" {
-  description = "Cloudflare zone ID"
+  description = "Cloudflare Zone ID for your domain"
+  type        = string
+}
+
+variable "terra_bucket_name" {
+  description = "S3 bucket name for Terraform backend state"
   type        = string
 }
 
 variable "cloudflare_api_token" {
-  description = "Cloudflare API token"
   type        = string
+  description = "Cloudflare API token with DNS edit permissions"
   sensitive   = true
 }
 
-variable "domain" {
-  description = "Domain name (e.g., app.example.com)"
+variable "cluster_name" {
+  description = "ECS cluster name"
   type        = string
 }
-
-variable "name_prefix" {
-  description = "Prefix for resource names"
-  type        = string
-  default     = "myapp"
-}
-
-variable "vpc_cidr" {
-  description = "CIDR block for VPC"
-  type        = string
-  default     = "10.0.0.0/16"
-}
-
-variable "public_subnet_cidrs" {
-  description = "CIDRs for public subnets"
-  type        = list(string)
-  default     = ["10.0.1.0/24", "10.0.2.0/24"]
-}
-
-variable "azs" {
-  description = "Availability zones"
-  type        = list(string)
-  default     = ["eu-west-2a", "eu-west-2b"]
-}
-
-variable "container_name" {
-  description = "ECS container name"
-  type        = string
-  default     = "react-app"
-}
-
-variable "image_url" {
-  description = "Container image URL (ECR or Docker Hub)"
-  type        = string
-}
-
-variable "container_port" {
-  description = "Container port"
-  type        = number
-  default     = 80
-}
-
-variable "desired_count" {
-  description = "Number of ECS tasks"
-  type        = number
-  default     = 1
-}
-
-variable "backend_bucket_name" {
-  type        = string
-  description = "The name of the S3 bucket to store Terraform state."
-}
-
-variable "validation_method" {
-  type        = string
-}
-
-variable "cloudflare_ttl" {
-  type        = number
-}
-
-variable "cloudflare_record_type" {
-  description = "Type of DNS record (e.g., A, CNAME)"
-  type        = string
-  default     = "CNAME"
-}
-
-variable "cloudflare_record_ttl" {
-  description = "TTL for the DNS record"
-  type        = number
-  default     = 1
-}
-
-variable "cloudflare_record_proxied" {
-  description = "Whether Cloudflare should proxy this record"
-  type        = bool
-  default     = true
-}
-
-variable "alb_internal" {
-  type        = bool
-  default     = false
-  description = "Whether the ALB is internal or external"
-}
-
-variable "alb_type" {
-  type        = string
-  default     = "application"
-  description = "Type of Load Balancer"
-}
-
-variable "enable_alb_deletion_protection" {
-  type        = bool
-  default     = false
-  description = "Enable deletion protection on the ALB"
-}
-
-variable "target_port" {
-  type        = number
-  default     = 80
-}
-
-variable "target_protocol" {
-  type        = string
-  default     = "HTTP"
-}
-
-variable "target_type" {
-  type        = string
-  default     = "ip"
-}
-
-variable "health_check_path" {
-  type        = string
-  default     = "/"
-}
-
-variable "health_check_interval" {
-  type        = number
-  default     = 30
-}
-
-variable "health_check_timeout" {
-  type        = number
-  default     = 5
-}
-
-variable "healthy_threshold" {
-  type        = number
-  default     = 3
-}
-
-variable "unhealthy_threshold" {
-  type        = number
-  default     = 3
-}
-
-variable "health_check_matcher" {
-  type        = string
-  default     = "200-399"
-}
-
-variable "https_listener_port" {
-  type        = number
-  default     = 443
-}
-
-variable "https_listener_protocol" {
-  type        = string
-  default     = "HTTPS"
-}
-
-variable "ssl_policy" {
-  type        = string
-  default     = "ELBSecurityPolicy-2016-08"
-}
-
-variable "http_listener_port" {
-  type        = number
-  default     = 80
-}
-
-variable "http_listener_protocol" {
-  type        = string
-  default     = "HTTP"
-}
-
-variable "redirect_port" {
-  type        = string
-  default     = "443"
-}
-
-variable "redirect_protocol" {
-  type        = string
-  default     = "HTTPS"
-}
-
-variable "redirect_status_code" {
-  type        = string
-  default     = "HTTP_301"
-}
-
-variable "subnet_public_ip" {
-  type        = bool
-  default     = true
-  description = "Assign public IP on launch"
-}
-
-variable "routing_cidr_block" {
-  type        = string
-  default     = "0.0.0.0/0"
-  description = "CIDR block for internet access"
-}
-
-variable "execution_role_name" {
-  type        = string
-  description = "Name of the ECS execution role"
-  default     = "ecs-exec-role"
-}
-
-variable "task_role_name" {
-  type        = string
-  description = "Name of the ECS task role"
-  default     = "ecs-task-role"
-}
-
-variable "tags" {
-  type        = map(string)
-  default     = {}
-  description = "Tags applied to all resources."
-}
-

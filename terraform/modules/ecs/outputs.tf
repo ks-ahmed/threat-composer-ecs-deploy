@@ -1,16 +1,16 @@
-output "ecs_cluster_id" {
-  description = "The ECS Cluster ID"
+output "cluster_id" {
+  description = "ID of the ECS cluster"
   value       = aws_ecs_cluster.this.id
 }
 
-output "ecs_task_definition_arn" {
-  description = "The ECS Task Definition ARN"
-  value       = aws_ecs_task_definition.this.arn
+output "service_name" {
+  description = "Name of the ECS service"
+  value       = aws_ecs_service.this.name
 }
 
-output "ecs_service_name" {
-  description = "The ECS Service Name"
-  value       = aws_ecs_service.this.name
+output "ecs_task_definition_arn" {
+  description = "ARN of the ECS task definition"
+  value       = aws_ecs_task_definition.this.arn
 }
 
 output "ecs_security_group_id" {
@@ -18,3 +18,6 @@ output "ecs_security_group_id" {
   value       = aws_security_group.ecs_sg.id
 }
 
+output "alb_target_group_arn" {
+  value = var.alb_target_group_arn
+}

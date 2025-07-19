@@ -1,29 +1,13 @@
-variable "cloudflare_zone_id" {
+variable "zone_id" {
   type = string
 }
 
-variable "domain_name" {
-  type = string
-}
-
-variable "target" {
-  type = string
-}
-
-variable "cloudflare_record_type" {
-  type = string
-  default = "CNAME"
-  description = "Cloudflare record type for the app"
-}
-
-variable "cloudflare_record_ttl" {
-  type = number
-  default = 1
-  description = "Cloudflare record ttl for the app"
-}
-
-variable "cloudflare_record_proxied" {
-  type = bool
-  default = true
-  description = "Cloudflare record proxied for the app"
+variable "records" {
+  type = list(object({
+    name    = string
+    type    = string
+    content = string
+    ttl     = number
+    proxied = bool
+  }))
 }

@@ -1,109 +1,153 @@
-
-
-module "vpc" {
-  source          = "./modules/vpc"
-  cidr_block      = var.vpc_cidr
-  public_subnet_cidrs = var.public_subnet_cidrs
-  azs             = var.azs
-  name_prefix     = var.name_prefix
-  subnet_public_ip = var.subnet_public_ip
-  routing_cidr_block = var.routing_cidr_block
-}
-
-module "acm" {
-  source             = "./modules/acm"
-
-  domain             = var.domain
-  cloudflare_zone_id = var.cloudflare_zone_id
-  name_prefix        = var.name_prefix
-  validation_method  = var.validation_method
-  cloudflare_ttl     = var.cloudflare_ttl 
-
-  providers = {
-    aws = aws
-  }
-}
-
 module "alb" {
-  source                     = "./modules/alb"
-  name_prefix                = var.name_prefix
-  internal                   = var.alb_internal
-  load_balancer_type         = var.alb_type
-  subnet_ids                 = module.vpc.public_subnet_ids
-  enable_deletion_protection = var.enable_alb_deletion_protection
-
-  target_port                = var.target_port
-  target_protocol            = var.target_protocol
-  vpc_id                     = module.vpc.vpc_id
-  tags                       = var.tags
-  target_type                = var.target_type
-
-  health_check_path          = var.health_check_path
-  health_check_interval      = var.health_check_interval
-  health_check_timeout       = var.health_check_timeout
-  healthy_threshold          = var.healthy_threshold
-  unhealthy_threshold        = var.unhealthy_threshold
-  health_check_matcher       = var.health_check_matcher
-
-  https_listener_port        = var.https_listener_port
-  https_listener_protocol    = var.https_listener_protocol
-  ssl_policy                 = var.ssl_policy
-  certificate_arn            = module.acm.certificate_arn
-
-
-  http_listener_port         = var.http_listener_port
-  http_listener_protocol     = var.http_listener_protocol
-  redirect_port              = var.redirect_port
-  redirect_protocol          = var.redirect_protocol
-  redirect_status_code       = var.redirect_status_code
-}
-
-module "iam_roles" {
-  source      = "./modules/iam_roles"
-  name_prefix = var.name_prefix
-  execution_role_name = var.execution_role_name
-  task_role_name      = var.task_role_name
+  source              = "./modules/alb"
+  name_prefix         = var.name_prefix
+  vpc_id              = module.vpc.vpc_id
+  public_subnet_ids   = module.vpc.public_subnet_ids
+  target_port         = var.container_port
 
 }
 
 
 module "ecs" {
-  source            = "./modules/ecs"
-  name_prefix       = var.name_prefix
-  container_name    = var.container_name
-  image_url         = var.image_url
-  container_port    = var.container_port
-  vpc_id            = module.vpc.vpc_id
+  source           = "./modules/ecs"
+  name_prefix      = var.name_prefix
+  aws_region       = var.aws_region
 
-  desired_count     = var.desired_count
-  subnet_ids        = module.vpc.public_subnet_ids
-  alb_security_group_id  = module.alb.alb_security_group_id
-  target_group_arn  = module.alb.alb_target_group_arn
-  load_balancer_arn = module.alb.alb_arn
-  certificate_arn    = module.acm.certificate_arn
-  execution_role_arn = module.iam_roles.execution_role_arn
-  task_role_arn      = module.iam_roles.task_role_arn
+  # ECS Cluster & App
+  cluster_name = var.cluster_name
+  container_image  = var.container_image
+  desired_count    = var.desired_count
+  container_port   = var.container_port
 
+  # Networking
+  vpc_id              = module.vpc.vpc_id
+  private_subnet_ids  = module.vpc.private_subnet_ids
+
+  # IAM Roles
+  execution_role_arn  = module.iam.task_execution_role_arn
+  task_role_arn       = module.iam.task_role_arn
+
+  # Load Balancer Integration
+  alb_target_group_arn  = module.alb.ecs_tg_arn 
+  alb_sg_id    = module.alb.alb_sg_id
+  alb_listener_arn      = module.alb.listener_http_arn
+
+  depends_on = [
+    module.alb
+  ]
 
 }
+
+resource "aws_lb_listener" "https" {
+  load_balancer_arn = module.alb.alb_arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = module.acm.certificate_arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = module.alb.ecs_tg_arn
+  }
+
+  depends_on = [
+    module.alb,          # Wait for the ALB module fully created
+    aws_acm_certificate_validation.acm_validation
+
+ # If you have DNS validation
+  ]
+}
+
+
+
+module "vpc" {
+  source = "./modules/vpc"  # Adjust path as needed
+
+  cidr_block             = "10.0.0.0/16"
+  public_subnet_suffixes = [0, 1]
+  private_subnet_suffixes = [10, 11]
+
+  tags = {
+    Environment = "dev"
+    Project     = "myproject"
+  }
+}
+
+
+module "acm" {
+  source      = "./modules/acm"
+  name_prefix = var.name_prefix
+  domain_name = var.domain_name
+}
+
+
+
+module "iam" {
+  source              = "./modules/iam"
+  name_prefix         = var.name_prefix
+
+  create_task_role      = true
+  task_role_policy_arns = [
+    # Example managed policies your app may need
+    "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess",          # For reading from S3
+    "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess",         # For reading SSM Parameters
+    "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"         # If you want more control over logs
+  ]
+
+  tags = {
+    Environment = var.name_prefix
+  }
+}
+
+
 
 module "cloudflare_dns" {
-  source             = "./modules/cloudflare_dns"
-  cloudflare_zone_id = var.cloudflare_zone_id
-  domain_name        = var.domain
-  target             = module.alb.alb_dns_name
-  cloudflare_record_type = var.cloudflare_record_type
-  cloudflare_record_ttl = var.cloudflare_record_ttl  
-  cloudflare_record_proxied = var.cloudflare_record_proxied
+  source  = "./modules/cloudflare_dns"
+  zone_id = var.cloudflare_zone_id
 
+  records = concat(
+    [
+      // CNAME record for app access via tm.vettlyai.com
+      {
+        name    = "tm"  # this will resolve as tm.vettlyai.com
+        type    = "CNAME"
+        content = module.alb.alb_dns_name
+        ttl     = 1
+        proxied = true
+      }
+    ],
+    [
+      // ACM DNS validation records
+      for dvo in module.acm.domain_validation_options : {
+        name    = dvo.resource_record_name
+        type    = dvo.resource_record_type
+        content = dvo.resource_record_value
+        ttl     = 120
+        proxied = false
+      }
+    ]
+  )
 }
 
-module "backend" {
-  source = "./modules/backend"
+resource "aws_acm_certificate_validation" "acm_validation" {
+  certificate_arn = module.acm.certificate_arn
 
-  bucket_name                = var.backend_bucket_name
-  tags                       = var.tags
-  object_lock_mode           = "GOVERNANCE"
-  object_lock_retention_days = 7
+  validation_record_fqdns = [
+    for dvo in module.acm.domain_validation_options : dvo.resource_record_name
+  ]
+
+  depends_on = [module.cloudflare_dns]
 }
 
+
+
+module "s3_backend" {
+  source       = "./modules/s3"
+  bucket_name    = var.terra_bucket_name
+  retention_days = 30
+
+  tags = {
+    Environment = var.name_prefix
+    Project     = "TerraformState"
+  }
+}

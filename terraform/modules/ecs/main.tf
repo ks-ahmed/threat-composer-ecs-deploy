@@ -1,123 +1,87 @@
-terraform {
-  required_version = ">= 1.3.0"
-
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
-}
-
 resource "aws_ecs_cluster" "this" {
-  name = "${var.name_prefix}-ecs-cluster"
-
-  dynamic "setting" {
-    for_each = var.enable_container_insights ? [1] : []
-    content {
-      name  = var.container_insights_name
-      value = var.container_insights_value
-    }
-  }
+  name = var.cluster_name
 }
 
 resource "aws_ecs_task_definition" "this" {
-  family                   = "${var.name_prefix}-task"
-  network_mode             = var.network_mode
-  requires_compatibilities = var.requires_compatibilities
-  cpu                      = var.cpu
-  memory                   = var.memory
+  family                   = var.cluster_name
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "256"
+  memory                   = "512"
   execution_role_arn       = var.execution_role_arn
   task_role_arn            = var.task_role_arn
 
+  container_definitions = jsonencode([{
+    name      = "app"
+    image     = var.container_image
+    essential = true
 
-
-  container_definitions = jsonencode([
-    {
-      name      = var.container_name
-      image     = var.image_url
-      essential = true
-      readonlyRootFilesystem = true
-      portMappings = [{
+    portMappings = [{
       containerPort = var.container_port
-      protocol      = var.container_port_protocol
-      }]
+      protocol      = "tcp"
+    }]
+
+    logConfiguration = {
+      logDriver = "awslogs"
+      options = {
+        awslogs-group         = "/ecs/${var.cluster_name}"
+        awslogs-region        = var.aws_region
+        awslogs-stream-prefix = "ecs"
+      }
     }
-  ])
+  }])
 }
 
 resource "aws_security_group" "ecs_sg" {
   name        = "${var.name_prefix}-ecs-sg"
-  description = var.sg_description
+  description = "Security group for ECS tasks"
   vpc_id      = var.vpc_id
 
-  dynamic "ingress" {
-    for_each = var.ingress_rules
-    content {
-      description = ingress.value.description
-      from_port   = ingress.value.from_port
-      to_port     = ingress.value.to_port
-      protocol    = ingress.value.protocol
-      cidr_blocks = ingress.value.cidr_blocks
-    }
+  ingress {
+    description     = "Allow ALB traffic on container port"
+    from_port       = var.container_port
+    to_port         = var.container_port
+    protocol        = "tcp"
+    security_groups = [var.alb_sg_id]
   }
 
   ingress {
-    from_port       = var.container_port
-    to_port         = var.container_port
-    protocol        = var.alb_ingress_protocol
-    security_groups = [var.alb_security_group_id]
-    description     = var.alb_ingress_description
+    description     = "Allow ALB traffic on port 443"
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    security_groups = [var.alb_sg_id]
   }
 
-  dynamic "egress" {
-    for_each = var.egress_rules
-    content {
-      description = egress.value.description
-      from_port   = egress.value.from_port
-      to_port     = egress.value.to_port
-      protocol    = egress.value.protocol
-      cidr_blocks = egress.value.cidr_blocks
-    }
-  }
-
-  tags = {
-    Name = "${var.name_prefix}-ecs-sg"
+  egress {
+    description = "Allow all outbound"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
-
 resource "aws_ecs_service" "this" {
-  name            = "${var.name_prefix}-service"
+  name            = "${var.cluster_name}-service"
   cluster         = aws_ecs_cluster.this.id
   task_definition = aws_ecs_task_definition.this.arn
   desired_count   = var.desired_count
-  launch_type     = var.launch_type
-  platform_version = var.platform_version
+  launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = var.subnet_ids
-    security_groups = [aws_security_group.ecs_sg.id]
-    assign_public_ip = var.assign_public_ip
+    subnets          = var.private_subnet_ids
+    security_groups  = [aws_security_group.ecs_sg.id]
+    assign_public_ip = false
   }
 
   load_balancer {
-    target_group_arn = var.target_group_arn
-    container_name   = var.container_name
+    target_group_arn = var.alb_target_group_arn
+    container_name   = "app"
     container_port   = var.container_port
   }
 
-  depends_on = [aws_lb_listener.https]
-}
-
-resource "aws_lb_listener" "https" {
-  load_balancer_arn = var.load_balancer_arn
-  port              = var.https_listener_port
-  protocol          = var.https_listener_protocol
-  certificate_arn   = var.certificate_arn
-
-  default_action {
-    type             = var.default_action_type
-    target_group_arn = var.target_group_arn
-  }
+  depends_on = [
+    aws_security_group.ecs_sg
+  ]
 }
