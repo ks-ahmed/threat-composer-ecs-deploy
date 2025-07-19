@@ -6,6 +6,11 @@ on:
       image_uri:
         required: true
         type: string
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
 
 
 jobs:
@@ -40,7 +45,6 @@ jobs:
         run: |
           terraform apply -lock=false -auto-approve \
             -var="backend_bucket_name=vettlyai-tf-state-prod" \
-            -var="backend_dynamodb_table_name=terraform-locks" \
             -var="container_image=${{ inputs.image_uri }}" \
             -var="domain=tm.vettlyai.com" \
             -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
