@@ -12,3 +12,9 @@ output "validation_record_names" {
   description = "Cloudflare DNS validation record names"
   value       = [for record in cloudflare_record.validation : record.name]
 }
+
+output "validated_certificate_arn" {
+  description = "Validated ACM certificate ARN"
+  value       = aws_acm_certificate_validation.this.certificate_arn
+}
+

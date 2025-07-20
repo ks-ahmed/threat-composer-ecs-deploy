@@ -59,5 +59,6 @@ output "iam_task_role_arn" {
 }
 
 output "validated_certificate_arn" {
-  value = aws_acm_certificate_validation.acm_validation.certificate_arn
+  value = module.acm.validated_certificate_arn
 }
+
