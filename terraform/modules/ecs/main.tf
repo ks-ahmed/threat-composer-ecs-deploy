@@ -32,29 +32,20 @@ resource "aws_ecs_task_definition" "this" {
   }])
 }
 
+# Define ECS security group for tasks
 resource "aws_security_group" "ecs_sg" {
   name        = "${var.name_prefix}-ecs-sg"
   description = "Security group for ECS tasks"
   vpc_id      = var.vpc_id
 
   ingress {
-    description     = "Allow ALB traffic on container port"
     from_port       = var.container_port
     to_port         = var.container_port
     protocol        = "tcp"
-    security_groups = [var.alb_sg_id]
-  }
-
-  ingress {
-    description     = "Allow ALB traffic on port 443"
-    from_port       = 443
-    to_port         = 443
-    protocol        = "tcp"
-    security_groups = [var.alb_sg_id]
+    security_groups = [var.alb_sg_id]  # Allow traffic from ALB security group
   }
 
   egress {
-    description = "Allow all outbound"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -62,6 +53,7 @@ resource "aws_security_group" "ecs_sg" {
   }
 }
 
+# Define ECS service (no change here)
 resource "aws_ecs_service" "this" {
   name            = "${var.cluster_name}-service"
   cluster         = aws_ecs_cluster.this.id
@@ -71,7 +63,7 @@ resource "aws_ecs_service" "this" {
 
   network_configuration {
     subnets          = var.private_subnet_ids
-    security_groups  = [aws_security_group.ecs_sg.id]
+    security_groups  = [aws_security_group.ecs_sg.id]  # ECS tasks security group
     assign_public_ip = false
   }
 

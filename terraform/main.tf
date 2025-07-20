@@ -1,42 +1,31 @@
 module "alb" {
-  source              = "./modules/alb"
-  name_prefix         = var.name_prefix
-  vpc_id              = module.vpc.vpc_id
-  public_subnet_ids   = module.vpc.public_subnet_ids
-  target_port         = var.container_port
-
+  source            = "./modules/alb"
+  name_prefix       = var.name_prefix
+  vpc_id            = module.vpc.vpc_id
+  public_subnet_ids = module.vpc.public_subnet_ids
+  target_port       = var.container_port
+  certificate_arn   = module.acm.certificate_arn  # e.g. from ACM
 }
 
 
 module "ecs" {
-  source           = "./modules/ecs"
-  name_prefix      = var.name_prefix
-  aws_region       = var.aws_region
-
-  # ECS Cluster & App
-  cluster_name = var.cluster_name
-  container_image  = var.container_image
-  desired_count    = var.desired_count
-  container_port   = var.container_port
-
-  # Networking
+  source              = "./modules/ecs"
+  name_prefix         = var.name_prefix
+  aws_region          = var.aws_region
+  cluster_name        = var.cluster_name
+  container_image     = var.container_image
+  desired_count       = var.desired_count
+  container_port      = var.container_port
   vpc_id              = module.vpc.vpc_id
   private_subnet_ids  = module.vpc.private_subnet_ids
-
-  # IAM Roles
   execution_role_arn  = module.iam.task_execution_role_arn
   task_role_arn       = module.iam.task_role_arn
-
-  # Load Balancer Integration
-  alb_target_group_arn  = module.alb.ecs_tg_arn 
-  alb_sg_id    = module.alb.alb_sg_id
-  alb_listener_arn      = module.alb.listener_http_arn
-
-  depends_on = [
-    module.alb
-  ]
-
+  alb_target_group_arn = module.alb.ecs_tg_arn
+  alb_listener_arn     = module.alb.listener_https_arn
+  alb_sg_id            = module.alb.alb_sg_id
 }
+
+
 
 resource "aws_lb_listener" "https" {
   load_balancer_arn = module.alb.alb_arn

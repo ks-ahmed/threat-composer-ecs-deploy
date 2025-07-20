@@ -21,3 +21,4 @@ output "ecs_security_group_id" {
 output "alb_target_group_arn" {
   value = var.alb_target_group_arn
 }
+

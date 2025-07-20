@@ -53,13 +53,14 @@ variable "alb_target_group_arn" {
   type        = string
 }
 
-variable "alb_sg_id" {
-  description = "Security group ID of the ALB"
-  type        = string
-}
-
 
 variable "alb_listener_arn" {
   description = "Listener ARN for ALB"
   type        = string
 }
+
+variable "alb_sg_id" {
+  description = "The security group ID of the ALB (defined in ALB module)"
+  type        = string
+}
+

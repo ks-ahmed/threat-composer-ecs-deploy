@@ -1,26 +1,20 @@
 resource "aws_security_group" "alb_sg" {
-  name        = "${var.name_prefix}-alb-sg"
-  description = "Security group for ALB"
-  vpc_id      = var.vpc_id
+  name   = "${var.name_prefix}-alb-sg"
+  vpc_id = var.vpc_id
 
   ingress {
-    description = "Allow HTTP"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
   ingress {
-    description = "Allow HTTPS"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
   egress {
-    description = "Allow all outbound"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -44,12 +38,12 @@ resource "aws_lb_target_group" "ecs_tg" {
   target_type = "ip"
 
   health_check {
-    path                = "/"
+    path                = "/health"
+    matcher             = "200"
     interval            = 30
     timeout             = 5
     healthy_threshold   = 2
     unhealthy_threshold = 2
-    matcher             = "200"
   }
 }
 
@@ -61,10 +55,23 @@ resource "aws_lb_listener" "http" {
   default_action {
     type = "redirect"
     redirect {
-      port        = "443"
       protocol    = "HTTPS"
+      port        = "443"
       status_code = "HTTP_301"
     }
   }
 }
 
+resource "aws_lb_listener" "https" {
+  load_balancer_arn = aws_lb.this.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+
+  certificate_arn = var.certificate_arn
+
+  default_action {
+    type = "forward"
+    target_group_arn = aws_lb_target_group.ecs_tg.arn
+  }
+}
