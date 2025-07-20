@@ -1,14 +1,7 @@
-# provider.tf
+
 
 terraform {
   required_version = ">= 1.3.0"
-
-  backend "s3" {
-    bucket         = "tm-remote-bucket"
-    key            = "terraform.tfstate"
-    region         = "eu-west-2"
-    encrypt        = true
-  }
 
   required_providers {
     aws = {
@@ -20,8 +13,17 @@ terraform {
       version = "~> 4.0"
     }
   }
+
+  backend "s3" {
+    bucket         = "tm-remote-bucket"
+    key            = "terraform.tfstate"
+    region         = "eu-west-2"
+    encrypt        = true
+  }
+
 }
 
+  # provider.tf
 provider "aws" {
   region = var.aws_region
 }
