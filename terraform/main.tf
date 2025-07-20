@@ -6,7 +6,7 @@ module "alb" {
   target_port       = var.container_port
   certificate_arn   = module.acm.certificate_arn  # e.g. from ACM
 
-  depends_on = [aws_acm_certificate_validation.acm_validation]
+  depends_on = [module.acm.validated_certificate_arn]
 
 }
 
