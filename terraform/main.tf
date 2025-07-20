@@ -5,6 +5,9 @@ module "alb" {
   public_subnet_ids = module.vpc.public_subnet_ids
   target_port       = var.container_port
   certificate_arn   = module.acm.certificate_arn  # e.g. from ACM
+
+  depends_on = [aws_acm_certificate_validation.acm_validation]
+
 }
 
 
@@ -27,28 +30,6 @@ module "ecs" {
 
 
 
-resource "aws_lb_listener" "https" {
-  load_balancer_arn = module.alb.alb_arn
-  port              = 443
-  protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = module.acm.certificate_arn
-
-  default_action {
-    type             = "forward"
-    target_group_arn = module.alb.ecs_tg_arn
-  }
-
-  depends_on = [
-    module.alb,          # Wait for the ALB module fully created
-    aws_acm_certificate_validation.acm_validation
-
- # If you have DNS validation
-  ]
-}
-
-
-
 module "vpc" {
   source = "./modules/vpc"  # Adjust path as needed
 
@@ -64,9 +45,10 @@ module "vpc" {
 
 
 module "acm" {
-  source      = "./modules/acm"
-  name_prefix = var.name_prefix
-  domain_name = var.domain_name
+  source           = "./modules/acm"
+  name_prefix      = var.name_prefix
+  domain_name      = var.domain_name
+  cloudflare_zone_id = var.cloudflare_zone_id
 }
 
 
@@ -94,40 +76,17 @@ module "cloudflare_dns" {
   source  = "./modules/cloudflare_dns"
   zone_id = var.cloudflare_zone_id
 
-  records = concat(
-    [
-      // CNAME record for app access via tm.vettlyai.com
-      {
-        name    = "tm"  # this will resolve as tm.vettlyai.com
-        type    = "CNAME"
-        content = module.alb.alb_dns_name
-        ttl     = 1
-        proxied = true
-      }
-    ],
-    [
-      // ACM DNS validation records
-      for dvo in module.acm.domain_validation_options : {
-        name    = dvo.resource_record_name
-        type    = dvo.resource_record_type
-        content = dvo.resource_record_value
-        ttl     = 120
-        proxied = false
-      }
-    ]
-  )
-}
-
-resource "aws_acm_certificate_validation" "acm_validation" {
-  certificate_arn = module.acm.certificate_arn
-
-  validation_record_fqdns = [
-    for dvo in module.acm.domain_validation_options : dvo.resource_record_name
+  records = [
+    // CNAME record for app access via tm.vettlyai.com
+    {
+      name    = "tm"  # this will resolve as tm.vettlyai.com
+      type    = "CNAME"
+      content = module.alb.alb_dns_name
+      ttl     = 1
+      proxied = true
+    }
   ]
-
-  depends_on = [module.cloudflare_dns]
 }
-
 
 
 module "s3_backend" {

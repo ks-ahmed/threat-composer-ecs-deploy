@@ -1,10 +1,14 @@
 output "certificate_arn" {
   description = "ARN of the ACM certificate"
-  value       = aws_acm_certificate.tm-acm.arn
+  value       = aws_acm_certificate.this.arn
 }
 
 output "domain_validation_options" {
-  value = aws_acm_certificate.tm-acm.domain_validation_options
-  description = "The domain validation options for DNS validation"
+  description = "Domain validation options for ACM"
+  value       = aws_acm_certificate.this.domain_validation_options
 }
 
+output "validation_record_names" {
+  description = "Cloudflare DNS validation record names"
+  value       = [for record in cloudflare_record.validation : record.name]
+}
