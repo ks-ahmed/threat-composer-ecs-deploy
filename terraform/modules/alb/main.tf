@@ -38,7 +38,7 @@ resource "aws_lb_target_group" "ecs_tg" {
   target_type = "ip"
 
   health_check {
-    path                = "/health"
+    path                = "/"
     matcher             = "200"
     interval            = 60
     timeout             = 10

@@ -62,7 +62,6 @@ module "iam" {
     # Example managed policies your app may need
     "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess",          # For reading from S3
     "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess",         # For reading SSM Parameters
-    "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"         # If you want more control over logs
   ]
 
   tags = {

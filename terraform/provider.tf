@@ -14,12 +14,12 @@ terraform {
     }
   }
 
-  backend "s3" {
-    bucket         = "tm-remote-bucket"
-    key            = "terraform.tfstate"
-    region         = "eu-west-2"
-    encrypt        = true
-  }
+#  backend "s3" {
+#    bucket         = "tm-remote-bucket"
+#    key            = "terraform.tfstate"
+#    region         = "eu-west-2"
+#    encrypt        = true
+#  }
 
 }
 
