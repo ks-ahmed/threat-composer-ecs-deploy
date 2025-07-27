@@ -1,4 +1,4 @@
-FROM node:18-alpine AS builder
+FROM node:18 AS builder
 
 WORKDIR /app
 
@@ -12,10 +12,18 @@ RUN yarn build
 
 FROM nginx:alpine
 
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
 RUN rm -rf /usr/share/nginx/html/*
 
 COPY --from=builder /app/build /usr/share/nginx/html
 
-EXPOSE 80
+COPY nginx.conf /etc/nginx/nginx.conf
+
+RUN chown -R appuser:appgroup /usr/share/nginx/html
+
+USER appuser
+
+EXPOSE 8080
 
 CMD ["nginx", "-g", "daemon off;"]
