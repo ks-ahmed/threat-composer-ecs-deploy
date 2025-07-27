@@ -1,6 +1,18 @@
-output "alb_sg_id"         { value = aws_security_group.alb_sg.id }
-output "alb_arn"           { value = aws_lb.this.arn }
-output "alb_dns_name"      { value = aws_lb.this.dns_name }
-output "ecs_tg_arn"        { value = aws_lb_target_group.ecs_tg.arn }
-output "listener_http_arn"{ value = aws_lb_listener.http.arn }
-output "listener_https_arn"{ value = aws_lb_listener.https.arn }
+output "dns_name" {
+  value = aws_lb.main.dns_name
+  description = "The DNS name of the ALB"
+}
+
+output "target_group_arn" {
+  value = aws_lb_target_group.app.arn
+  description = "The target group ARN for the ECS service"
+}
+
+output "security_group_id" {
+  value = aws_security_group.alb.id
+  description = "The ALB security group ID"
+}
+
+output "alb_dns_name" {
+  value = aws_lb.main.dns_name
+}

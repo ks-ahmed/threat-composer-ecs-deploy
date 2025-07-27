@@ -1,19 +1,20 @@
 variable "zone_id" {
-  type        = string
-  description = "Cloudflare zone ID for the DNS records"
+  type = string
 }
 
-variable "records" {
-  description = "List of Cloudflare DNS records to create"
-  type = list(object({
-    name    = string
-    type    = string
-    content = string
-    ttl     = number
-    proxied = bool
+variable "domain" {
+  type = string
+}
+
+variable "alb_dns" {
+  type = string
+}
+
+variable "validation_records" {
+  type = map(object({
+    name  = string
+    type  = string
+    value = string
   }))
-  validation {
-    condition     = length(var.records) > 0
-    error_message = "You must provide at least one DNS record."
-  }
+  default = {}
 }

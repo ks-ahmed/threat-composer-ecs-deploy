@@ -1,5 +1,4 @@
 
-
 terraform {
   required_version = ">= 1.3.0"
 
@@ -13,17 +12,8 @@ terraform {
       version = "~> 4.0"
     }
   }
-
-#  backend "s3" {
-#    bucket         = "tm-remote-bucket"
-#    key            = "terraform.tfstate"
-#    region         = "eu-west-2"
-#    encrypt        = true
-#  }
-
 }
 
-  # provider.tf
 provider "aws" {
   region = var.aws_region
 }
@@ -31,3 +21,13 @@ provider "aws" {
 provider "cloudflare" {
   api_token = var.cloudflare_api_token
 }
+
+#terraform {
+#  backend "s3" {
+#    bucket         = "your-tf-state-bucket"
+#    key            = "ecs-assignment/terraform.tfstate"
+#    region         = "eu-west-2"
+#    state_locking  = true  # enabled by default now
+#    consistency    = "strong" # Optional but recommended
+#  }
+#s}

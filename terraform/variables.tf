@@ -1,57 +1,54 @@
-variable "vpc_cidr" {
-  type        = string
-  description = "CIDR block for the VPC"
+variable "aws_region" {
+  default = "eu-west-2"
 }
 
-variable "aws_region" {
-    type = string
-    description = "AWS Region for my VPC"
-  
+variable "vpc_cidr" {
+  default = "10.0.0.0/16"
+}
+
+variable "public_subnet_cidrs" {
+  type = list(string)
+  default = ["10.0.1.0/24", "10.0.2.0/24"]
+}
+
+variable "private_subnet_cidrs" {
+  type = list(string)
+  default = ["10.0.101.0/24", "10.0.102.0/24"]
+}
+
+variable "azs" {
+  type    = list(string)
+  default = ["eu-west-2a", "eu-west-2b"]
 }
 
 variable "domain_name" {
+  description = "App domain like app.example.com"
   type        = string
-  description = "Domain name for HTTPS"
-}
-
-variable "name_prefix" {
-  type        = string
-  description = "Prefix used for naming AWS resources"
-}
-
-variable "container_image" {
-  type        = string
-  description = "Docker image URI for ECS task"
-}
-
-variable "container_port" {
-  type        = number
-  description = "Port exposed by your ECS container"
-}
-
-variable "desired_count" {
-  type        = number
-  description = "Number of ECS tasks to run"
-  default     = 2
 }
 
 variable "cloudflare_zone_id" {
-  description = "Cloudflare Zone ID for your domain"
-  type        = string
-}
-
-variable "terra_bucket_name" {
-  description = "S3 bucket name for Terraform backend state"
+  description = "Cloudflare zone ID"
   type        = string
 }
 
 variable "cloudflare_api_token" {
+  description = "Cloudflare API Token"
   type        = string
-  description = "Cloudflare API token with DNS edit permissions"
   sensitive   = true
 }
 
-variable "cluster_name" {
-  description = "ECS cluster name"
+variable "ecr_image" {
+  description = "Full ECR image URI"
   type        = string
+}
+
+variable "s3_backend_bucket" {
+  description = "S3 bucket for Terraform backend state"
+  type        = string
+}
+
+variable "bucket_name" {
+    type = string
+    description = "s3 bucket name"
+  
 }

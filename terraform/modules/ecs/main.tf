@@ -1,9 +1,9 @@
-resource "aws_ecs_cluster" "this" {
-  name = var.cluster_name
+resource "aws_ecs_cluster" "main" {
+  name = "ecs-cluster"
 }
 
-resource "aws_ecs_task_definition" "this" {
-  family                   = var.cluster_name
+resource "aws_ecs_task_definition" "app" {
+  family                   = "ecs-app"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = "256"
@@ -11,38 +11,28 @@ resource "aws_ecs_task_definition" "this" {
   execution_role_arn       = var.execution_role_arn
   task_role_arn            = var.task_role_arn
 
-  container_definitions = jsonencode([{
-    name      = "app"
-    image     = var.container_image
-    essential = true
-
-    portMappings = [{
-      containerPort = var.container_port
-      protocol      = "tcp"
-    }]
-
-    logConfiguration = {
-      logDriver = "awslogs"
-      options = {
-        awslogs-group         = "/ecs/${var.cluster_name}"
-        awslogs-region        = var.aws_region
-        awslogs-stream-prefix = "ecs"
-      }
+  container_definitions = jsonencode([
+    {
+      name      = "frontend"
+      image     = var.container_image
+      portMappings = [
+        {
+          containerPort = 80
+          protocol      = "tcp"
+        }
+      ]
     }
-  }])
+  ])
 }
 
-# Define ECS security group for tasks
-resource "aws_security_group" "ecs_sg" {
-  name        = "${var.name_prefix}-ecs-sg"
-  description = "Security group for ECS tasks"
-  vpc_id      = var.vpc_id
+resource "aws_security_group" "ecs_service" {
+  vpc_id = var.vpc_id
 
   ingress {
-    from_port       = var.container_port
-    to_port         = var.container_port
+    from_port       = 80
+    to_port         = 80
     protocol        = "tcp"
-    security_groups = [var.alb_sg_id]  # Allow traffic from ALB security group
+    security_groups = [var.alb_security_group_id]
   }
 
   egress {
@@ -53,27 +43,22 @@ resource "aws_security_group" "ecs_sg" {
   }
 }
 
-# Define ECS service (no change here)
-resource "aws_ecs_service" "this" {
-  name            = "${var.cluster_name}-service"
-  cluster         = aws_ecs_cluster.this.id
-  task_definition = aws_ecs_task_definition.this.arn
-  desired_count   = var.desired_count
+resource "aws_ecs_service" "app" {
+  name            = "ecs-service"
+  cluster         = aws_ecs_cluster.main.id
   launch_type     = "FARGATE"
+  task_definition = aws_ecs_task_definition.app.arn
+  desired_count   = 1
 
   network_configuration {
     subnets          = var.private_subnet_ids
-    security_groups  = [aws_security_group.ecs_sg.id]  # ECS tasks security group
     assign_public_ip = false
+    security_groups  = [aws_security_group.ecs_service.id]
   }
 
   load_balancer {
     target_group_arn = var.alb_target_group_arn
-    container_name   = "app"
-    container_port   = var.container_port
+    container_name   = "frontend"
+    container_port   = 80
   }
-
-  depends_on = [
-    aws_security_group.ecs_sg
-  ]
 }
