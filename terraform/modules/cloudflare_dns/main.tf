@@ -28,7 +28,7 @@ resource "cloudflare_record" "validation" {
   zone_id = var.zone_id
   name    = each.value.name
   type    = each.value.type
-  value   = each.value.value
+  content   = each.value.value
   ttl     = 60
 }
 
