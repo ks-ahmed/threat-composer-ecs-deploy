@@ -1,10 +1,20 @@
-variable "cidr" {
+variable "name" {
+  description = "Base name for VPC and related resources"
   type        = string
+}
+
+variable "cidr" {
   description = "CIDR block for the VPC"
-  default     = "10.0.0.0/16"
+  type        = string
 }
 
 variable "azs" {
+  description = "List of availability zones"
   type        = list(string)
-  description = "List of availability zones to use"
+}
+
+variable "default_tags" {
+  description = "Default tags to apply to all resources"
+  type        = map(string)
+  default     = {}
 }

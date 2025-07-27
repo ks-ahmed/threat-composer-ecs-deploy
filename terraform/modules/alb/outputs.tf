@@ -1,6 +1,7 @@
 output "dns_name" {
-  value = aws_lb.main.dns_name
   description = "The DNS name of the ALB"
+  value = aws_lb.main.dns_name
+
 }
 
 output "target_group_arn" {
@@ -14,5 +15,6 @@ output "security_group_id" {
 }
 
 output "alb_dns_name" {
+  description = "The DNS name of the ALB"
   value = aws_lb.main.dns_name
 }

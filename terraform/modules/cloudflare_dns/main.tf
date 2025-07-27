@@ -16,10 +16,10 @@ terraform {
 resource "cloudflare_record" "app" {
   zone_id = var.zone_id
   name    = var.domain
-  type    = "CNAME"
+  type    = var.dns_record_type
   content = var.alb_dns
-  ttl     = 1
-  proxied = true
+  ttl     = var.dns_ttl
+  proxied = var.dns_proxied
 }
 
 resource "cloudflare_record" "validation" {
@@ -28,7 +28,6 @@ resource "cloudflare_record" "validation" {
   zone_id = var.zone_id
   name    = each.value.name
   type    = each.value.type
-  content   = each.value.value
-  ttl     = 60
+  content = each.value.value
+  ttl     = var.validation_ttl
 }
-

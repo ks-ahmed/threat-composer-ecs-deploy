@@ -1,7 +1,7 @@
 
 module "vpc" {
   source = "./modules/vpc"
-
+  name = var.vpc_name
   cidr                 = var.vpc_cidr
   azs                  = var.azs
   
@@ -10,7 +10,6 @@ module "vpc" {
 module "acm" {
   source  = "./modules/acm"
   domain  = var.domain_name
-  zone_id = var.cloudflare_zone_id
 }
 
 module "alb" {
@@ -22,7 +21,7 @@ module "alb" {
 
 module "iam" {
   source = "./modules/iam"
-  name = "ecs-threat-model"
+  name = var.iam_name
 }
 
 module "ecs" {

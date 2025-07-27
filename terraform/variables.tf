@@ -52,3 +52,15 @@ variable "bucket_name" {
     description = "s3 bucket name"
   
 }
+
+variable "vpc_name" {
+    type = string
+    description = "tag name of VPC"
+    default = "main"
+}
+
+variable "iam_name" {
+    type = string
+    description = "tag name of VPC"
+    default = "ecs-threat-model"
+}

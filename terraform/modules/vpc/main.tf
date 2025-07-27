@@ -3,17 +3,17 @@ resource "aws_vpc" "main" {
   enable_dns_support   = true
   enable_dns_hostnames = true
 
-  tags = {
-    Name = "main-vpc"
-  }
+  tags = merge(var.default_tags, {
+    Name = "${var.name}-vpc"
+  })
 }
 
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
 
-  tags = {
-    Name = "main-igw"
-  }
+  tags = merge(var.default_tags, {
+    Name = "${var.name}-igw"
+  })
 }
 
 resource "aws_subnet" "public" {
@@ -23,9 +23,9 @@ resource "aws_subnet" "public" {
   availability_zone       = var.azs[count.index]
   map_public_ip_on_launch = true
 
-  tags = {
-    Name = "public-subnet-${count.index + 1}"
-  }
+  tags = merge(var.default_tags, {
+    Name = "${var.name}-public-${count.index + 1}"
+  })
 }
 
 resource "aws_subnet" "private" {
@@ -34,9 +34,9 @@ resource "aws_subnet" "private" {
   cidr_block        = cidrsubnet(var.cidr, 4, count.index + length(var.azs))
   availability_zone = var.azs[count.index]
 
-  tags = {
-    Name = "private-subnet-${count.index + 1}"
-  }
+  tags = merge(var.default_tags, {
+    Name = "${var.name}-private-${count.index + 1}"
+  })
 }
 
 resource "aws_eip" "nat" {
@@ -46,20 +46,19 @@ resource "aws_nat_gateway" "nat" {
   allocation_id = aws_eip.nat.id
   subnet_id     = aws_subnet.public[0].id
 
-  tags = {
-    Name = "main-nat"
-  }
+  tags = merge(var.default_tags, {
+    Name = "${var.name}-nat"
+  })
 
   depends_on = [aws_internet_gateway.igw]
 }
 
-# Public route table
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
 
-  tags = {
-    Name = "public-rt"
-  }
+  tags = merge(var.default_tags, {
+    Name = "${var.name}-public-rt"
+  })
 }
 
 resource "aws_route" "public_internet" {
@@ -74,13 +73,12 @@ resource "aws_route_table_association" "public" {
   route_table_id = aws_route_table.public.id
 }
 
-# Private route table
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
 
-  tags = {
-    Name = "private-rt"
-  }
+  tags = merge(var.default_tags, {
+    Name = "${var.name}-private-rt"
+  })
 }
 
 resource "aws_route" "private_nat" {
