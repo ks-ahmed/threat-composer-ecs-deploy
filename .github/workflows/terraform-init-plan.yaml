@@ -88,7 +88,7 @@ jobs:
 
   
   call-terraform-apply:
-    needs: terraform-plan
+    needs: terraform-init-plan
     uses: ./.github/workflows/terraform-apply.yaml
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
