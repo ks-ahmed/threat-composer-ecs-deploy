@@ -69,7 +69,7 @@ jobs:
         run: |
           terraform plan \
             -lock=false \
-            -var="bucket_name="threat-composer-bucket" \
+            -var="bucket_name=threat-composer-bucket" \
             -var="ecr_image=${{ inputs.image_uri }}" \
             -var="domain=tm.vettlyai.com" \
             -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
