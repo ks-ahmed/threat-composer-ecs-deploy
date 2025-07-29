@@ -20,9 +20,11 @@ jobs:
   terraform-apply:
     runs-on: ubuntu-latest
 
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -31,12 +33,22 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-2
 
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
+
+
+      - name: Download tfplan artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: tfplan
+          path: ./terraform
+
 
       - name: Terraform Init
         working-directory: ./terraform
         run: terraform init -input=false
+
 
       - name: Terraform Apply
         working-directory: ./terraform
