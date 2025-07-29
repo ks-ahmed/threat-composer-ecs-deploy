@@ -7,6 +7,7 @@ on:
         description: "Build & Push Dockerfile"
         required: true
         default: "start"
+        type: string
 
 env:
   AWS_REGION: eu-west-2
