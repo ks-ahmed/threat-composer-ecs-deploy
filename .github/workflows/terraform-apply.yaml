@@ -11,6 +11,10 @@ on:
         required: true
       AWS_SECRET_ACCESS_KEY:
         required: true
+      CLOUDFLARE_ZONE_ID:
+        required: true
+      CLOUDFLARE_API_TOKEN:
+        required: true
 
 jobs:
   terraform-apply:
