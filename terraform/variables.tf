@@ -44,7 +44,6 @@ variable "container_image" {
   type        = string
 }
 
-
 variable "vpc_name" {
     type = string
     description = "tag name of VPC"
