@@ -58,7 +58,8 @@ jobs:
       - name: Show Image URL
         id: show-image
         run: |
-          echo "image_uri=${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "image_uri=${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG" >> "$GITHUB_OUTPUT"
+
 
   call-terraform-plan:
     needs: build-and-push
