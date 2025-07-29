@@ -1,3 +1,7 @@
+terraform {
+  required_version = ">= 1.3.0"
+}
+
 resource "aws_ecs_cluster" "main" {
   name = var.ecs_cluster_name
 }

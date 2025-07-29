@@ -1,8 +1,10 @@
 variable "aws_region" {
+  type = string
   default = "eu-west-2"
 }
 
 variable "vpc_cidr" {
+  type = string
   default = "10.0.0.0/16"
 }
 
@@ -39,11 +41,6 @@ variable "cloudflare_api_token" {
 
 variable "ecr_image" {
   description = "Full ECR image URI"
-  type        = string
-}
-
-variable "s3_backend_bucket" {
-  description = "S3 bucket for Terraform backend state"
   type        = string
 }
 

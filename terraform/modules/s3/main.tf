@@ -1,3 +1,7 @@
+terraform {
+  required_version = ">= 1.3.0"
+}
+
 resource "aws_s3_bucket" "tf_state" {
   bucket = var.bucket_name
 

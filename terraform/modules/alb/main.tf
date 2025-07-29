@@ -1,3 +1,7 @@
+terraform {
+  required_version = ">= 1.3.0"
+}
+
 resource "aws_security_group" "alb" {
   name   = var.sg_name
   vpc_id = var.vpc_id

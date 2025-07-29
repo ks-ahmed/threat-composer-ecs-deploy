@@ -4,6 +4,8 @@ module "vpc" {
   name = var.vpc_name
   cidr                 = var.vpc_cidr
   azs                  = var.azs
+  private_subnet_cidrs = var.private_subnet_cidrs
+  public_subnet_cidrs = var.public_subnet_cidrs
   
 }
 
@@ -54,12 +56,12 @@ module "cloudflare_dns" {
   }
 }
 
+module "acm_validation" {
+  source = "./modules/acm_validation"
 
-resource "aws_acm_certificate_validation" "cert" {
   certificate_arn         = module.acm.certificate_arn
   validation_record_fqdns = module.cloudflare_dns.validation_fqdns
 }
-
 
 module "s3" {
   source = "./modules/s3"

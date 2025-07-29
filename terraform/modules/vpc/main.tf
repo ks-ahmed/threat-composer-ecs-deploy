@@ -1,3 +1,7 @@
+terraform {
+  required_version = ">= 1.3.0"
+}
+
 resource "aws_vpc" "main" {
   cidr_block           = var.cidr
   enable_dns_support   = true
@@ -19,9 +23,10 @@ resource "aws_internet_gateway" "igw" {
 resource "aws_subnet" "public" {
   count                   = length(var.azs)
   vpc_id                  = aws_vpc.main.id
-  cidr_block              = cidrsubnet(var.cidr, 4, count.index)
+  cidr_block              = var.private_subnet_cidrs[count.index]
   availability_zone       = var.azs[count.index]
   map_public_ip_on_launch = true
+  
 
   tags = merge(var.default_tags, {
     Name = "${var.name}-public-${count.index + 1}"
@@ -31,7 +36,8 @@ resource "aws_subnet" "public" {
 resource "aws_subnet" "private" {
   count             = length(var.azs)
   vpc_id            = aws_vpc.main.id
-  cidr_block        = cidrsubnet(var.cidr, 4, count.index + length(var.azs))
+  cidr_block        = var.private_subnet_cidrs[count.index]
+
   availability_zone = var.azs[count.index]
 
   tags = merge(var.default_tags, {

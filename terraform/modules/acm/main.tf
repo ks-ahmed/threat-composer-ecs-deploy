@@ -1,3 +1,7 @@
+terraform {
+  required_version = ">= 1.3.0"
+}
+
 resource "aws_acm_certificate" "cert" {
   domain_name       = var.domain
   validation_method = var.validation_method

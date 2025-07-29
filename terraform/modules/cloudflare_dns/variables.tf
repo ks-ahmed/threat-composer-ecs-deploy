@@ -1,20 +1,4 @@
-variable "terraform_version" {
-  description = "The required Terraform version"
-  type        = string
-  default     = ">= 1.3.0"
-}
 
-variable "aws_provider_version" {
-  description = "AWS provider version"
-  type        = string
-  default     = "~> 5.0"
-}
-
-variable "cloudflare_provider_version" {
-  description = "Cloudflare provider version"
-  type        = string
-  default     = "~> 4.0"
-}
 
 variable "zone_id" {
   description = "Cloudflare Zone ID"
