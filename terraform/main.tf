@@ -63,8 +63,4 @@ module "acm_validation" {
   validation_record_fqdns = module.cloudflare_dns.validation_fqdns
 }
 
-module "s3" {
-  source = "./modules/s3"
-  bucket_name = var.bucket_name
 
-}

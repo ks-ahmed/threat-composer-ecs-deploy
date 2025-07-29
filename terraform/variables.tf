@@ -44,12 +44,6 @@ variable "container_image" {
   type        = string
 }
 
-variable "bucket_name" {
-    type = string
-    description = "s3 bucket name"
-  
-}
-
 variable "vpc_name" {
     type = string
     description = "tag name of VPC"
