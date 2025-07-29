@@ -14,7 +14,6 @@ on:
         required: true
 
 
-
 jobs:
   terraform-plan:
     runs-on: ubuntu-latest
@@ -31,7 +30,6 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-2
-
 
 
       - name: Setup Terraform
@@ -67,8 +65,8 @@ jobs:
         run: |
           terraform plan \
             -lock=false \
-            -var="backend_bucket_name=vettlyai-tf-state-prod" \
-            -var="container_image=${{ inputs.image_uri }}" \
+            -var="bucket_name="threat-composer-bucket" \
+            -var="ecr_image=${{ inputs.image_uri }}" \
             -var="domain=tm.vettlyai.com" \
             -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
             -var="cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" \
