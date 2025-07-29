@@ -9,6 +9,7 @@ on:
         default: "start"
         type: string
 
+
 env:
   AWS_REGION: eu-west-2
   ECR_REPOSITORY: tm-app
@@ -18,12 +19,15 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
+
     outputs:
       image_uri: ${{ steps.show-image.outputs.image_uri }}
+
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -32,13 +36,16 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+
       - name: Build and tag Docker image
         run: |
           docker build -t $ECR_REPOSITORY:$IMAGE_TAG ./app
+
 
       - name: Run Trivy vulnerability scan (local image)
         uses: aquasecurity/trivy-action@master
@@ -50,10 +57,12 @@ jobs:
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
 
+
       - name: Tag and Push image to ECR
         run: |
           docker tag $ECR_REPOSITORY:$IMAGE_TAG ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
           docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
+
 
       - name: Show Image URL
         id: show-image

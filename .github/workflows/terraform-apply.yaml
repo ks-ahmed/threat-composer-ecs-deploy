@@ -52,4 +52,4 @@ jobs:
 
       - name: Terraform Apply
         working-directory: ./terraform
-        run: terraform apply -lock=false -auto-approve tfplan
+        run: terraform apply -auto-approve tfplan
