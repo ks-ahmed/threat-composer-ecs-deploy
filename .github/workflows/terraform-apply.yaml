@@ -12,16 +12,13 @@ on:
       AWS_SECRET_ACCESS_KEY:
         required: true
 
-
 jobs:
   terraform-apply:
     runs-on: ubuntu-latest
 
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -30,23 +27,13 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-2
 
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
-
 
       - name: Terraform Init
         working-directory: ./terraform
         run: terraform init -input=false
 
-
       - name: Terraform Apply
         working-directory: ./terraform
-        run: |
-          terraform apply -lock=false -auto-approve \
-            -var="bucket_name="threat-composer-bucket" \
-            -var="ecr_image=${{ inputs.image_uri }}" \
-            -var="domain=tm.vettlyai.com" \
-            -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
-            -var="cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" \
-            
+        run: terraform apply -lock=false -auto-approve tfplan

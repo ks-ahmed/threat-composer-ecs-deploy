@@ -36,16 +36,11 @@ jobs:
         run: terraform init -input=false
 
 
-      - name: Terraform Destroy Selected Modules
+      - name: Terraform Destroy
         working-directory: ./terraform
         run: |
           terraform destroy \
             -lock=false \
-            -target=module.vpc \
-            -target=module.ecs \
-            -target=module.alb \
-            -target=module.acm \
-            -target=module.cloudflare_dns \
             -var="bucket_name="threat-composer-bucket" \
             -var="ecr_image=${{ inputs.image_uri }}" \
             -var="domain=tm.vettlyai.com" \

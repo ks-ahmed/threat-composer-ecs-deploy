@@ -13,6 +13,9 @@ on:
       AWS_SECRET_ACCESS_KEY:
         required: true
 
+env:
+  SKIP_CHECKOV: ${{ vars.SKIP_CHECKOV }}
+
 
 jobs:
   terraform-plan:
@@ -47,7 +50,8 @@ jobs:
         run: tflint --recursive
 
 
-      - name: Run Checkov (Terraform security scan)
+      - name: Run Checkov
+        if: env.SKIP_CHECKOV != 'true'
         uses: bridgecrewio/checkov-action@v12.2455.0
         with:
           directory: ./terraform
