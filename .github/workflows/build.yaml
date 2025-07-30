@@ -5,26 +5,21 @@ on:
     branches:
       - main
 
-
 env:
   ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
   IMAGE_TAG: ${{ vars.IMAGE_TAG }}
   AWS_REGION: ${{ vars.AWS_REGION }}
 
-
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
-
     outputs:
       image_uri: ${{ steps.show-image.outputs.image_uri }}
-      
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -33,16 +28,13 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-
       - name: Build and tag Docker image
         run: |
           docker build -t $ECR_REPOSITORY:$IMAGE_TAG ./app
-
 
       - name: Run Trivy vulnerability scan (local image)
         uses: aquasecurity/trivy-action@master
@@ -54,25 +46,18 @@ jobs:
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
 
-
       - name: Tag and Push image to ECR
         run: |
           docker tag $ECR_REPOSITORY:$IMAGE_TAG ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
           docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
 
-
       - name: Show Image URL
         id: show-image
         run: |
-          echo "image_uri=${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:${IMAGE_TAG}" >> $GITHUB_OUTPUT
-        env:
-          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
-          IMAGE_TAG: ${{ env.IMAGE_TAG }}
-
+          echo "image_uri=${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: Debug built image URI
         run: echo "Built image URI=${{ steps.show-image.outputs.image_uri }}"
-
 
   call-terraform-init-plan:
     needs: build-and-push
@@ -84,7 +69,6 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-  
 
   call-terraform-apply:
     needs: call-terraform-init-plan
@@ -96,5 +80,3 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-
-

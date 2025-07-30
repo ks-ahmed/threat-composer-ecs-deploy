@@ -38,11 +38,6 @@ variable "container_name" {
   default     = "frontend"
 }
 
-variable "container_image" {
-  description = "Docker image for the container"
-  type        = string
-}
-
 variable "container_port" {
   description = "Port the container listens on"
   type        = number
@@ -109,4 +104,9 @@ variable "assign_public_ip" {
 variable "alb_target_group_arn" {
   description = "ARN of the ALB target group"
   type        = string
+}
+
+variable "container_image" {
+  type        = string
+  description = "Docker image URI for the container"
 }

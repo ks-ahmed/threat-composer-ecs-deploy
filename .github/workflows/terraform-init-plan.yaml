@@ -1,6 +1,5 @@
 name: Terraform Initialize & Plan
 
-
 on:
   workflow_call:
     inputs:
@@ -17,20 +16,16 @@ on:
       CLOUDFLARE_API_TOKEN:
         required: true
 
-
 env:
   SKIP_CHECKOV: ${{ vars.SKIP_CHECKOV }}
-
 
 jobs:
   terraform-plan:
     runs-on: ubuntu-latest
 
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -39,19 +34,15 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-2
 
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
-
 
       - name: Setup TFLint
         uses: terraform-linters/setup-tflint@v1
 
-
       - name: Run TFLint
         working-directory: ./terraform
         run: tflint --recursive
-
 
       - name: Run Checkov
         if: env.SKIP_CHECKOV != 'true'
@@ -61,15 +52,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      
       - name: Debug image URI in Plan
-        run: echo "Terraform Plan received image_uri=${{ inputs.image_uri }}"
-
+        run: |
+          echo "Terraform Plan received image_uri=${{ inputs.image_uri }}"
 
       - name: Terraform Init
         working-directory: ./terraform
         run: terraform init -input=false
-
 
       - name: Terraform Plan
         working-directory: ./terraform
@@ -78,12 +67,4 @@ jobs:
             -var="container_image=${{ inputs.image_uri }}" \
             -var="domain_name=tm.vettlyai.com" \
             -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
-            -var="cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" 
-
-
-  
-
-
-
-  
-
+            -var="cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}"

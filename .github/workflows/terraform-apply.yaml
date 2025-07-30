@@ -20,11 +20,9 @@ jobs:
   terraform-apply:
     runs-on: ubuntu-latest
 
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -33,22 +31,19 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-2
 
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-
-      - name: Debug image URI in Plan
-        run: echo "Terraform Plan received image_uri=${{ inputs.image_uri }}"
-
+      - name: Debug image URI in Apply
+        run: |
+          echo "Terraform Apply received image_uri=${{ inputs.image_uri }}"
 
       - name: Terraform Init
         working-directory: ./terraform
         run: terraform init -input=false
 
-
       - name: Terraform Apply
-        working-directory: ./terraform/
+        working-directory: ./terraform
         run: |
           terraform apply -auto-approve \
             -var="container_image=${{ inputs.image_uri }}" \
