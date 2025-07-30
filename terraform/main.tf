@@ -32,7 +32,7 @@ module "ecs" {
   private_subnet_ids    = module.vpc.private_subnets
   alb_target_group_arn  = module.alb.target_group_arn
   alb_security_group_id = module.alb.security_group_id
-  container_image       = var.container_image 
+  container_image       = var.ecr_image
   execution_role_arn    = module.iam.execution_role_arn
   task_role_arn         = module.iam.task_role_arn
 

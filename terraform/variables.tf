@@ -39,7 +39,7 @@ variable "cloudflare_api_token" {
   sensitive   = true
 }
 
-variable "container_image" {
+variable "ecr_image" {
   description = "Full ECR image URI"
   type        = string
 }
