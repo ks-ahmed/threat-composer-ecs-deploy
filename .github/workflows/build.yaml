@@ -21,7 +21,6 @@ jobs:
       image_uri: ${{ steps.show-image.outputs.image_uri }}
       
 
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -65,7 +64,7 @@ jobs:
       - name: Show Image URL
         id: show-image
         run: |
-          echo "image_uri=${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:${IMAGE_TAG}" >> $GITHUB_OUTPUT
+          echo "image_uri=${{ steps.login-ecr.outputs.registry }}/${ env.ECR_REPOSITORY }:${ env.IMAGE_TAG }" >> $GITHUB_OUTPUT
 
       - name: Debug built image URI
         run: echo "Built image URI=${{ steps.show-image.outputs.image_uri }}"
