@@ -73,7 +73,7 @@ jobs:
         working-directory: ./terraform
         run: |
           terraform plan \
-            -var="container_image=${{ inputs.image_uri }}" \
+            -var="ecr_image=${{ inputs.image_uri }}" \
             -var="domain_name=tm.vettlyai.com" \
             -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
             -var="cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" 
