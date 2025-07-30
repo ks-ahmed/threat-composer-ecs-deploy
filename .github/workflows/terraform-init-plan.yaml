@@ -86,12 +86,3 @@ jobs:
           name: tfplan
           path: ./terraform/tfplan
 
-  
-  call-terraform-apply:
-    needs: terraform-init-plan
-    uses: ./.github/workflows/terraform-apply.yaml
-    secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
