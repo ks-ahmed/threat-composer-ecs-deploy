@@ -63,6 +63,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      
+      - name: Debug image URI
+        run: echo "Terraform Plan received image_uri=${{ inputs.image_uri }}"
+
 
       - name: Terraform Init
         working-directory: ./terraform
@@ -79,16 +83,7 @@ jobs:
             -var="cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" 
 
 
-  call-terraform-apply:
-    needs: call-terraform-init-plan
-    uses: ./.github/workflows/terraform-apply.yaml
-    with:
-      image_uri: ${{ needs.build-and-push.outputs.image_uri }}
-    secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+  
 
 
 

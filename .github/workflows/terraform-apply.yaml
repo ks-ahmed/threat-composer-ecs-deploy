@@ -38,6 +38,10 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
 
+      - name: Debug image URI
+        run: echo "Terraform Apply received image_uri=${{ inputs.image_uri }}"
+
+
       - name: Terraform Init
         working-directory: ./terraform
         run: terraform init -input=false
