@@ -64,10 +64,11 @@ jobs:
 
       - name: Show Image URL
         id: show-image
-        run: echo "image_uri=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "image_uri=${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:${IMAGE_TAG}" >> $GITHUB_OUTPUT
 
-      - name: Debug image URI
-        run: echo "Terraform Plan received image_uri=${{ inputs.image_uri }}"
+      - name: Debug built image URI
+        run: echo "Built image URI=${{ steps.show-image.outputs.image_uri }}"
 
 
   call-terraform-init-plan:

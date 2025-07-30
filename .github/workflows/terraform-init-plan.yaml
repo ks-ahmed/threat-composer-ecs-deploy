@@ -62,7 +62,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       
-      - name: Debug image URI
+      - name: Debug image URI in Plan
         run: echo "Terraform Plan received image_uri=${{ inputs.image_uri }}"
 
 
