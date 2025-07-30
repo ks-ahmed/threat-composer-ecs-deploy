@@ -44,10 +44,8 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
 
-      - name: Install TFLint
-        run: |
-          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
-          tflint --init
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v1
 
 
       - name: Run TFLint
