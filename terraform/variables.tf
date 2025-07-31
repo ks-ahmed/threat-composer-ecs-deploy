@@ -40,8 +40,8 @@ variable "cloudflare_api_token" {
 }
 
 variable "container_image" {
-  description = "Full ECR image URI"
-  type        = string
+  type    = string
+  default = ""
 }
 
 variable "vpc_name" {
