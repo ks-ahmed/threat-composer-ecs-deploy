@@ -32,11 +32,10 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build and tag Docker image
-        run: |
-          docker build -t $ECR_REPOSITORY:$IMAGE_TAG ./app
+      - name: Build Docker image
+        run: docker build -t $ECR_REPOSITORY:$IMAGE_TAG ./app
 
-      - name: Run Trivy vulnerability scan (local image)
+      - name: Run Trivy vulnerability scan
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
@@ -46,37 +45,27 @@ jobs:
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
 
-      - name: Tag and Push image to ECR
+      - name: Tag and Push Docker image
         run: |
           docker tag $ECR_REPOSITORY:$IMAGE_TAG ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
           docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
 
-      - name: Show Image URL
+      - name: Set image URI output
         id: show-image
-        run: |
-          echo "image_uri=${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+        run: echo "image_uri=${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      - name: Debug built image URI
-        run: echo "Built image URI=${{ steps.show-image.outputs.image_uri }}"
-
+  
   call-terraform-init-plan:
     needs: build-and-push
     uses: ./.github/workflows/terraform-init-plan.yaml
     with:
       image_uri: ${{ needs.build-and-push.outputs.image_uri }}
-    secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    secrets: inherit
 
   call-terraform-apply:
     needs: call-terraform-init-plan
     uses: ./.github/workflows/terraform-apply.yaml
     with:
       image_uri: ${{ needs.call-terraform-init-plan.outputs.image_uri }}
-    secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    secrets: inherit
+
