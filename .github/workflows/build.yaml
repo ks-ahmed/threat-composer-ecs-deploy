@@ -7,7 +7,7 @@ on:
 
 env:
     ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
-    IMAGE_TAG: ${{ guthub.sha }}
+    IMAGE_TAG: ${{ github.sha }}
     AWS_REGION: ${{ vars.AWS_REGION }}
     
 
