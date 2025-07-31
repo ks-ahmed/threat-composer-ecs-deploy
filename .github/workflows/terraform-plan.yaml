@@ -1,77 +1,38 @@
 name: Terraform Plan
 
 on:
-  workflow_dispatch:
-    inputs:
-      image-tag:
-        description: 'Docker Image tag to deploy'
-        required: true
-
-env:
-  AWS_REGION: ${{ secrets.AWS_REGION }}
-  DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
-  CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
-  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+  workflow_run:
+    workflows: ["Build and Push Docker Image"]
+    types:
+      - completed
 
 jobs:
   terraform-plan:
     runs-on: ubuntu-latest
-    outputs:
-      image-tag: ${{ github.event.inputs['image-tag'] }}
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: ${{ env.AWS_REGION }}
-      DOMAIN_NAME: ${{ env.DOMAIN_NAME }}
-      CLOUDFLARE_ZONE_ID: ${{ env.CLOUDFLARE_ZONE_ID }}
-      CLOUDFLARE_API_TOKEN: ${{ env.CLOUDFLARE_API_TOKEN }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-      
-      - name: Setup TFLint
-        uses: terraform-linters/setup-tflint@v1
-
-      - name: Run TFLint
-        working-directory: ./terraform
-        run: tflint --recursive
-
-      - name: Run Checkov
-        if: env.SKIP_CHECKOV != 'true'
-        uses: bridgecrewio/checkov-action@v12.2455.0
+      - name: Download image tag artifact
+        uses: actions/download-artifact@v3
         with:
-          directory: ./terraform
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: image-tag
+
+      - name: Read image tag
+        id: read-tag
+        run: |
+          IMAGE_TAG=$(cat image_tag.txt)
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
       - name: Terraform Init
-        working-directory: ./terraform
         run: terraform init
 
       - name: Terraform Plan
-        working-directory: ./terraform
-        run: |
-          terraform plan -out=tfplan \
-            -var="container_image=${{ github.event.inputs['image-tag'] }}" \
-            -var="domain_name=${DOMAIN_NAME}" \
-            -var="cloudflare_zone_id=${CLOUDFLARE_ZONE_ID}" \
-            -var="cloudflare_api_token=${CLOUDFLARE_API_TOKEN}"
+        run: terraform plan -out=tfplan -var="docker_image=${{ env.IMAGE_TAG }}"
 
-      - name: Upload tfplan artifact
+      - name: Upload Terraform plan artifact
         uses: actions/upload-artifact@v3
         with:
           name: tfplan
-          path: ./terraform/tfplan
-
-      - name: Trigger Terraform Apply workflow
-        uses: peter-evans/workflow-dispatch@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          workflow: terraform-apply.yml
-          ref: main
-          inputs: |
-            image-tag: ${{ github.event.inputs['image-tag'] }}
+          path: tfplan

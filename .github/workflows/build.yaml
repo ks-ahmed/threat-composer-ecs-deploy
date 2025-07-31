@@ -12,8 +12,6 @@ env:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-    outputs:
-      image-tag: ${{ steps.set-image-tag.outputs.image_tag }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -37,6 +35,7 @@ jobs:
           ECR_URI=$(aws ecr describe-repositories --repository-names $ECR_REPOSITORY --query 'repositories[0].repositoryUri' --output text)
           docker tag $ECR_REPOSITORY:${{ github.sha }} $ECR_URI:${{ github.sha }}
           echo "image_tag=$ECR_URI:${{ github.sha }}" >> $GITHUB_OUTPUT
+          echo "$ECR_URI:${{ github.sha }}" > image_tag.txt
 
       - name: Run Trivy vulnerability scan
         uses: aquasecurity/trivy-action@master
@@ -51,12 +50,8 @@ jobs:
       - name: Push Docker image to ECR
         run: docker push ${{ steps.set-image-tag.outputs.image_tag }}
 
-      - name: Trigger Terraform Plan workflow
-        uses: peter-evans/workflow-dispatch@v1
+      - name: Upload image tag artifact
+        uses: actions/upload-artifact@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          workflow: terraform-plan.yml
-          ref: main
-          inputs: |
-            image-tag: ${{ steps.set-image-tag.outputs.image_tag }}
+          name: image-tag
+          path: image_tag.txt
