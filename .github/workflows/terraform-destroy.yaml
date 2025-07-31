@@ -8,40 +8,46 @@ on:
         required: true
         type: string
 
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  DOMAIN_NAME: tm.vettlyai.com
+  CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
 jobs:
   terraform-destroy:
     runs-on: ubuntu-latest
-
-
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ env.AWS_REGION }}
+      DOMAIN_NAME: ${{ env.DOMAIN_NAME }}
+      CLOUDFLARE_ZONE_ID: ${{ env.CLOUDFLARE_ZONE_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ env.CLOUDFLARE_API_TOKEN }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-2
-
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
-
 
       - name: Terraform Init
         working-directory: ./terraform
         run: terraform init -input=false
 
-
       - name: Terraform Destroy
         working-directory: ./terraform
         run: |
           terraform destroy \
-            -var="container_image=${{ inputs.image_uri }}" \
-            -var="domain_name=tm.vettlyai.com" \
-            -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
-            -var="cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -var="container_image=${{ github.event.inputs.image_uri }}" \
+            -var="domain_name=${DOMAIN_NAME}" \
+            -var="cloudflare_zone_id=${CLOUDFLARE_ZONE_ID}" \
+            -var="cloudflare_api_token=${CLOUDFLARE_API_TOKEN}" \
             -auto-approve

@@ -6,23 +6,19 @@ on:
       - main
 
 env:
-    ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
-    IMAGE_TAG: ${{ github.sha }}
-    AWS_REGION: ${{ vars.AWS_REGION }}
-    
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ECR_REPOSITORY: tm-app
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-
     outputs:
-      image_uri: ${{ steps.show-image.outputs.image_uri }}
-  
+      image-tag: ${{ steps.set-image-tag.outputs.image_tag }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      - name: Configure AWS credentials
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -30,50 +26,37 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
-        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build Docker image
-        run: docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
+        run: docker build -t $ECR_REPOSITORY:${{ github.sha }} ./app
 
+      - name: Tag Docker image for ECR
+        id: set-image-tag
+        run: |
+          ECR_URI=$(aws ecr describe-repositories --repository-names $ECR_REPOSITORY --query 'repositories[0].repositoryUri' --output text)
+          docker tag $ECR_REPOSITORY:${{ github.sha }} $ECR_URI:${{ github.sha }}
+          echo "::set-output name=image_tag::$ECR_URI:${{ github.sha }}"
 
       - name: Run Trivy vulnerability scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
-          format: 'table'
+          image-ref: ${{ steps.set-image-tag.outputs.image_tag }}
+          format: table
           exit-code: '1'
           ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
+          vuln-type: os,library
+          severity: CRITICAL,HIGH
 
-      - name: Tag and Push Docker image
-        run: |
-          docker tag $ECR_REPOSITORY:$IMAGE_TAG ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
+      - name: Push Docker image to ECR
+        run: docker push ${{ steps.set-image-tag.outputs.image_tag }}
 
-      - name: Set image URI output
-        id: show-image
-        run: echo "image_uri=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
-
-      - name: Show IMAGE_TAG
-        run: echo "Image tag is $IMAGE_TAG"
-
-
-
-  
-  call-terraform-init-plan:
-    needs: build-and-push
-    uses: ./.github/workflows/terraform-init-plan.yaml
-    with:
-      image_uri: ${{ needs.build-and-push.outputs.image_uri }}
-    secrets: inherit
-
-  call-terraform-apply:
-    needs: call-terraform-init-plan
-    uses: ./.github/workflows/terraform-apply.yaml
-    with:
-      image_uri: ${{ needs.build-and-push.outputs.image_uri }}   
-    secrets: inherit
-
-
+      - name: Trigger Terraform Plan workflow
+        uses: peter-evans/workflow-dispatch@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          workflow: terraform-plan.yml
+          ref: main
+          inputs: |
+            image-tag: ${{ steps.set-image-tag.outputs.image_tag }}
