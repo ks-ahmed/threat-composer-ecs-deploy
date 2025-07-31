@@ -71,6 +71,7 @@ jobs:
     needs: call-terraform-init-plan
     uses: ./.github/workflows/terraform-apply.yaml
     with:
-      image_uri: ${{ needs.build-and-push.outputs.image_uri }}
+      image_uri: ${{ needs.build-and-push.outputs.image_uri }}   
     secrets: inherit
+
 

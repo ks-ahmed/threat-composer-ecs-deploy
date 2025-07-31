@@ -15,7 +15,6 @@ on:
         required: true
       CLOUDFLARE_API_TOKEN:
         required: true
-    
 
 env:
   SKIP_CHECKOV: ${{ vars.SKIP_CHECKOV }}
@@ -23,7 +22,6 @@ env:
 jobs:
   terraform-plan:
     runs-on: ubuntu-latest
-
 
     steps:
       - name: Checkout code
@@ -36,11 +34,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-2
 
+      - name: Show IMAGE_URI input
+        run: |
+          echo "Image URI passed in: ${{ inputs.image_uri }}"
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
-
-      - name: Show IMAGE_TAG
-        run: echo "Image tag is $IMAGE_TAG"
 
       - name: Setup TFLint
         uses: terraform-linters/setup-tflint@v1
