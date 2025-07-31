@@ -52,7 +52,7 @@ jobs:
         run: docker push ${{ steps.set-image-tag.outputs.image_tag }}
 
       - name: Trigger Terraform Plan workflow
-        uses: peter-evans/workflow-dispatch@v1
+        uses: peter-evans/workflow-dispatch@v1.1.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
