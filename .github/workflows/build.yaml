@@ -36,7 +36,7 @@ jobs:
         run: |
           ECR_URI=$(aws ecr describe-repositories --repository-names $ECR_REPOSITORY --query 'repositories[0].repositoryUri' --output text)
           docker tag $ECR_REPOSITORY:${{ github.sha }} $ECR_URI:${{ github.sha }}
-          echo "::set-output name=image_tag::$ECR_URI:${{ github.sha }}"
+          echo "image_tag=$ECR_URI:${{ github.sha }}" >> $GITHUB_OUTPUT
 
       - name: Run Trivy vulnerability scan
         uses: aquasecurity/trivy-action@master
@@ -52,7 +52,7 @@ jobs:
         run: docker push ${{ steps.set-image-tag.outputs.image_tag }}
 
       - name: Trigger Terraform Plan workflow
-        uses: peter-evans/workflow-dispatch@v1.1.0
+        uses: peter-evans/workflow-dispatch@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
