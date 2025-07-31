@@ -24,7 +24,8 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      image_uri: ${{ inputs.image_uri }}
+      image_uri: ${{ steps.set-output.outputs.image_uri }}
+
 
     steps:
       - name: Checkout code
@@ -71,3 +72,7 @@ jobs:
             -var="domain_name=tm.vettlyai.com" \
             -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
             -var="cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}"
+
+      - name: Set output image_uri
+        id: set-output
+        run: echo "image_uri=${{ inputs.image_uri }}" >> $GITHUB_OUTPUT
