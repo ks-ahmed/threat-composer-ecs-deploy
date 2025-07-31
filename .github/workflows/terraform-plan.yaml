@@ -1,38 +1,65 @@
 name: Terraform Plan
 
 on:
-  workflow_run:
-    workflows: ["Build and Push Docker Image"]
-    types:
-      - completed
+  workflow_dispatch:
 
 jobs:
   terraform-plan:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    env:
+      SKIP_CHECKOV: ${{ secrets.SKIP_CHECKOV }}
+      
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Download image tag artifact
-        uses: actions/download-artifact@v4
+      - name: Download image tag artifact from build
+        uses: dawidd6/action-download-artifact@v3
         with:
+          workflow: build-and-push.yml
           name: image-tag
+          path: .
 
       - name: Read image tag
-        id: read-tag
         run: |
           IMAGE_TAG=$(cat image_tag.txt)
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.8.0
+
       - name: Terraform Init
         run: terraform init
 
-      - name: Terraform Plan
-        run: terraform plan -out=tfplan -var="docker_image=${{ env.IMAGE_TAG }}"
+      - name: Write terraform.auto.tfvars
+        run: |
+          echo 'container_image    = "${{ env.IMAGE_TAG }}"' > terraform.auto.tfvars
+          echo 'cloudflare_zone_id = "${{ secrets.CLOUDFLARE_ZONE_ID }}"' >> terraform.auto.tfvars
+          echo 'cloudflare_api_key = "${{ secrets.CLOUDFLARE_API_KEY }}"' >> terraform.auto.tfvars
+          echo 'domain_name        = "${{ secrets.DOMAIN_NAME }}"' >> terraform.auto.tfvars
 
-      - name: Upload Terraform plan artifact
+      - name: Run TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: latest
+      - run: tflint --init && tflint
+
+      - name: Run Checkov (unless SKIP_CHECKOV is true)
+        if: ${{ env.SKIP_CHECKOV != 'true' }}
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: .
+          quiet: true
+          soft_fail: false
+
+      - name: Terraform Plan
+        run: terraform plan -var-file=terraform.auto.tfvars
+
+      - name: Upload tfvars for apply
         uses: actions/upload-artifact@v4
         with:
-          name: tfplan
-          path: tfplan
+          name: apply-tfvars
+          path: terraform.auto.tfvars

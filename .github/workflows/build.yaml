@@ -12,6 +12,7 @@ env:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -29,26 +30,23 @@ jobs:
       - name: Build Docker image
         run: docker build -t $ECR_REPOSITORY:${{ github.sha }} ./app
 
-      - name: Tag Docker image for ECR
-        id: set-image-tag
+      - name: Tag and Push Docker image to ECR
         run: |
           ECR_URI=$(aws ecr describe-repositories --repository-names $ECR_REPOSITORY --query 'repositories[0].repositoryUri' --output text)
           docker tag $ECR_REPOSITORY:${{ github.sha }} $ECR_URI:${{ github.sha }}
-          echo "image_tag=$ECR_URI:${{ github.sha }}" >> $GITHUB_OUTPUT
+          docker push $ECR_URI:${{ github.sha }}
           echo "$ECR_URI:${{ github.sha }}" > image_tag.txt
-
-      - name: Run Trivy vulnerability scan
+      
+      - name: Scan Docker image with Trivy
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ steps.set-image-tag.outputs.image_tag }}
+          image-ref: ${{ env.ECR_REPOSITORY }}:${{ github.sha }}
           format: table
           exit-code: '1'
           ignore-unfixed: true
           vuln-type: os,library
           severity: CRITICAL,HIGH
 
-      - name: Push Docker image to ECR
-        run: docker push ${{ steps.set-image-tag.outputs.image_tag }}
 
       - name: Upload image tag artifact
         uses: actions/upload-artifact@v4
