@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Download image tag artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: image-tag
 
@@ -32,7 +32,7 @@ jobs:
         run: terraform plan -out=tfplan -var="docker_image=${{ env.IMAGE_TAG }}"
 
       - name: Upload Terraform plan artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: tfplan
           path: tfplan
