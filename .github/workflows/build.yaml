@@ -7,7 +7,7 @@ on:
 
 env:
     ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
-    IMAGE_TAG: ${{ vars.IMAGE_TAG }}
+    IMAGE_TAG: ${{ github.sha }}
     AWS_REGION: ${{ vars.AWS_REGION }}
     
 
@@ -34,7 +34,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build Docker image
-        run: docker build -t $ECR_REPOSITORY:$IMAGE_TAG ./app
+        run: docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
 
 
       - name: Run Trivy vulnerability scan
