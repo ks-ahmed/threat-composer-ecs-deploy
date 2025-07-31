@@ -15,6 +15,11 @@ on:
         required: true
       CLOUDFLARE_API_TOKEN:
         required: true
+    
+    outputs:
+      image_uri:
+        description: "The container image URI passed to Terraform"
+        value: ${{ inputs.image_uri }}
 
 env:
   SKIP_CHECKOV: ${{ vars.SKIP_CHECKOV }}
@@ -23,8 +28,6 @@ jobs:
   terraform-plan:
     runs-on: ubuntu-latest
 
-    outputs:
-      image_uri: ${{ inputs.image_uri }}
 
     steps:
       - name: Checkout code
