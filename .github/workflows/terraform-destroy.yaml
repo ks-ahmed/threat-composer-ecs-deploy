@@ -13,11 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Download tfvars file from plan
+      - name: Download tfvars file
         uses: dawidd6/action-download-artifact@v3
         with:
           workflow: terraform-plan.yml
-          name: apply-tfvars
+          name: terraform-vars
           path: .
 
       - name: Setup Terraform

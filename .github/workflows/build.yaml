@@ -1,9 +1,7 @@
 name: Build and Push Docker Image
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -27,29 +25,32 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: Get ECR URI
+        id: ecr
+        run: |
+          ECR_URI=$(aws ecr describe-repositories --repository-names $ECR_REPOSITORY --query 'repositories[0].repositoryUri' --output text)
+          echo "ECR_URI=$ECR_URI" >> $GITHUB_ENV
+          echo "uri=$ECR_URI" >> $GITHUB_OUTPUT
+
       - name: Build Docker image
         run: docker build -t $ECR_REPOSITORY:${{ github.sha }} ./app
 
-      - name: Tag and Push Docker image to ECR
-        run: |
-          ECR_URI=$(aws ecr describe-repositories --repository-names $ECR_REPOSITORY --query 'repositories[0].repositoryUri' --output text)
-          docker tag $ECR_REPOSITORY:${{ github.sha }} $ECR_URI:${{ github.sha }}
-          docker push $ECR_URI:${{ github.sha }}
-          echo "$ECR_URI:${{ github.sha }}" > image_tag.txt
-      
-      - name: Scan Docker image with Trivy
+      - name: Tag Docker image
+        run: docker tag $ECR_REPOSITORY:${{ github.sha }} ${{ env.ECR_URI }}:${{ github.sha }}
+
+      - name: Run Trivy vulnerability scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+          image-ref: ${{ env.ECR_URI }}:${{ github.sha }}
           format: table
           exit-code: '1'
           ignore-unfixed: true
           vuln-type: os,library
           severity: CRITICAL,HIGH
 
+      - name: Push Docker image to ECR
+        run: docker push ${{ env.ECR_URI }}:${{ github.sha }}
 
-      - name: Upload image tag artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: image-tag
-          path: image_tag.txt
+      - name: Output full image URI
+        run: |
+          echo "✅ Image pushed: ${ECR_URI}:${GITHUB_SHA}"

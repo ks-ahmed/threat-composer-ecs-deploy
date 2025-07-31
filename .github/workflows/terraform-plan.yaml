@@ -2,29 +2,20 @@ name: Terraform Plan
 
 on:
   workflow_dispatch:
+    inputs:
+      image_uri:
+        description: 'Full container image URI (e.g. 123456.dkr.ecr.us-east-1.amazonaws.com/tm-app:abc123)'
+        required: true
 
 jobs:
   terraform-plan:
     runs-on: ubuntu-latest
     env:
       SKIP_CHECKOV: ${{ secrets.SKIP_CHECKOV }}
-      
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
-      - name: Download image tag artifact from build
-        uses: dawidd6/action-download-artifact@v3
-        with:
-          workflow: build-and-push.yml
-          name: image-tag
-          path: .
-
-      - name: Read image tag
-        run: |
-          IMAGE_TAG=$(cat image_tag.txt)
-          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -36,7 +27,7 @@ jobs:
 
       - name: Write terraform.auto.tfvars
         run: |
-          echo 'container_image    = "${{ env.IMAGE_TAG }}"' > terraform.auto.tfvars
+          echo 'container_image    = "${{ github.event.inputs.image_uri }}"' > terraform.auto.tfvars
           echo 'cloudflare_zone_id = "${{ secrets.CLOUDFLARE_ZONE_ID }}"' >> terraform.auto.tfvars
           echo 'cloudflare_api_key = "${{ secrets.CLOUDFLARE_API_KEY }}"' >> terraform.auto.tfvars
           echo 'domain_name        = "${{ secrets.DOMAIN_NAME }}"' >> terraform.auto.tfvars
@@ -58,8 +49,8 @@ jobs:
       - name: Terraform Plan
         run: terraform plan -var-file=terraform.auto.tfvars
 
-      - name: Upload tfvars for apply
+      - name: Upload tfvars for apply/destroy
         uses: actions/upload-artifact@v4
         with:
-          name: apply-tfvars
+          name: terraform-vars
           path: terraform.auto.tfvars
