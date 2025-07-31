@@ -74,7 +74,7 @@ jobs:
     needs: call-terraform-init-plan
     uses: ./.github/workflows/terraform-apply.yaml
     with:
-      image_uri: ${{ needs.build-and-push.outputs.image_uri }}
+      image_uri: ${{ needs.call-terraform-init-plan.outputs.image_uri }}
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
