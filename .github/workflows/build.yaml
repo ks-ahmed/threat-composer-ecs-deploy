@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
-      IMAGE_TAG: ${{ vars.IMAGE_TAG }} 
+      IMAGE_TAG: ${{ github.sha }}
       AWS_REGION: ${{ vars.AWS_REGION }}
     outputs:
       image_uri: ${{ steps.show-image.outputs.image_uri }}
@@ -53,6 +53,10 @@ jobs:
         id: show-image
         run: echo "image_uri=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
 
+      - name: Show IMAGE_TAG
+        run: echo "Image tag is $IMAGE_TAG"
+
+
 
   
   call-terraform-init-plan:
@@ -66,6 +70,6 @@ jobs:
     needs: call-terraform-init-plan
     uses: ./.github/workflows/terraform-apply.yaml
     with:
-      image_uri: ${{ needs.call-terraform-init-plan.outputs.image_uri }}
+      image_uri: ${{ needs.build-and-push.outputs.image_uri }}
     secrets: inherit
 

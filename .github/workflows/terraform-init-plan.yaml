@@ -16,10 +16,6 @@ on:
       CLOUDFLARE_API_TOKEN:
         required: true
     
-    outputs:
-      image_uri:
-        description: "The container image URI passed to Terraform"
-        value: ${{ inputs.image_uri }}
 
 env:
   SKIP_CHECKOV: ${{ vars.SKIP_CHECKOV }}
@@ -42,6 +38,9 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
+
+      - name: Show IMAGE_TAG
+        run: echo "Image tag is $IMAGE_TAG"
 
       - name: Setup TFLint
         uses: terraform-linters/setup-tflint@v1

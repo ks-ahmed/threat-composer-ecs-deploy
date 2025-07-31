@@ -34,6 +34,9 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      - name: Show IMAGE_TAG
+        run: echo "Image tag is $IMAGE_TAG"
+
       - name: Terraform Init
         working-directory: ./terraform
         run: terraform init -input=false
