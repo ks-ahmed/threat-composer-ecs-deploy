@@ -39,7 +39,7 @@ jobs:
       - run: tflint --init && tflint
 
       - name: Run Checkov (unless SKIP_CHECKOV is true)
-        if: ${{ env.SKIP_CHECKOV != 'true' }}
+        if: ${{ env.SKIP_CHECKOV != 'false' }}
         uses: bridgecrewio/checkov-action@v12
         with:
           directory: .
