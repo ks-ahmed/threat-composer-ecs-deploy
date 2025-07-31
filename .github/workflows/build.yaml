@@ -5,16 +5,16 @@ on:
     branches:
       - main
 
-env:
-  ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
-  IMAGE_TAG: ${{ vars.IMAGE_TAG }}
-  AWS_REGION: ${{ vars.AWS_REGION }}
-
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    env:
+      ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+      IMAGE_TAG: ${{ vars.IMAGE_TAG }} 
+      AWS_REGION: ${{ vars.AWS_REGION }}
     outputs:
       image_uri: ${{ steps.show-image.outputs.image_uri }}
+
 
     steps:
       - name: Checkout code
