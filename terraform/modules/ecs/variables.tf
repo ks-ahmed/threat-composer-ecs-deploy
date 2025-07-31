@@ -108,9 +108,5 @@ variable "alb_target_group_arn" {
 
 variable "container_image" {
   type    = string
-  default = ""
 }
 
-locals {
-  final_image = var.container_image != "" ? var.container_image : env("CONTAINER_IMAGE")
-}
