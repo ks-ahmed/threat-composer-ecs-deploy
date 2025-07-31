@@ -41,7 +41,6 @@ variable "cloudflare_api_token" {
 
 variable "container_image" {
   type    = string
-  default = ""
 }
 
 variable "vpc_name" {
