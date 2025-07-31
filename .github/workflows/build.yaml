@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
-      IMAGE_TAG: ${{ github.sha }}
+      IMAGE_TAG: ${{ vars.IMAGE_TAG }}
       AWS_REGION: ${{ vars.AWS_REGION }}
     outputs:
       image_uri: ${{ steps.show-image.outputs.image_uri }}
