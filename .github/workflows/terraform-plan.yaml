@@ -1,12 +1,12 @@
 name: Terraform Plan
 
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       image_uri:
+        description: 'Full container image URI (e.g. 123456.dkr.ecr.us-east-1.amazonaws.com/tm-app:abc123)'
         required: true
-        type: string
-        
+
 jobs:
   terraform-plan:
     runs-on: ubuntu-latest
