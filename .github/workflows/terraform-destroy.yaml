@@ -27,11 +27,12 @@ jobs:
         with:
           terraform_version: 1.8.0
 
-      - name: Download terraform vars artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: terraform-vars
-          path: ./terraform
+      - name: Write terraform.auto.tfvars
+        run: |
+          echo 'container_image    = "${{ github.event.inputs.image_uri }}"' > terraform/terraform.auto.tfvars
+          echo 'cloudflare_zone_id = "${{ secrets.CLOUDFLARE_ZONE_ID }}"' >> terraform/terraform.auto.tfvars
+          echo 'cloudflare_api_key = "${{ secrets.CLOUDFLARE_API_KEY }}"' >> terraform/terraform.auto.tfvars
+          echo 'domain_name        = "${{ secrets.DOMAIN_NAME }}"' >> terraform/terraform.auto.tfvars
 
       - name: Terraform Init
         run: terraform init
