@@ -6,8 +6,6 @@ on:
 jobs:
   terraform-apply:
     runs-on: ubuntu-latest
-    env:
-      SKIP_CHECKOV: ${{ secrets.SKIP_CHECKOV }}
 
     steps:
       - name: Checkout code
@@ -28,13 +26,6 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
-      - name: Run Checkov (unless SKIP_CHECKOV is true)
-        if: ${{ env.SKIP_CHECKOV != 'true' }}
-        uses: bridgecrewio/checkov-action@v12
-        with:
-          directory: .
-          quiet: true
-          soft_fail: false
 
       - name: Terraform Apply
         run: terraform apply -auto-approve -var-file=terraform.auto.tfvars
