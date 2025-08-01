@@ -29,13 +29,15 @@ jobs:
 
       - name: Write terraform.auto.tfvars
         run: |
-          echo 'container_image    = "${{ github.event.inputs.image_uri }}"' > terraform.auto.tfvars
-          echo 'cloudflare_zone_id = "${{ secrets.CLOUDFLARE_ZONE_ID }}"' >> terraform.auto.tfvars
-          echo 'cloudflare_api_key = "${{ secrets.CLOUDFLARE_API_KEY }}"' >> terraform.auto.tfvars
-          echo 'domain_name        = "${{ secrets.DOMAIN_NAME }}"' >> terraform.auto.tfvars
+          echo 'container_image    = "${{ github.event.inputs.image_uri }}"' > terraform/terraform.auto.tfvars
+          echo 'cloudflare_zone_id = "${{ secrets.CLOUDFLARE_ZONE_ID }}"' >> terraform/terraform.auto.tfvars
+          echo 'cloudflare_api_key = "${{ secrets.CLOUDFLARE_API_KEY }}"' >> terraform/terraform.auto.tfvars
+          echo 'domain_name        = "${{ secrets.DOMAIN_NAME }}"' >> terraform/terraform.auto.tfvars
 
       - name: Terraform Init
-        run: terraform init
+        run: |
+          cd terraform
+          terraform init
 
       - name: Run TFLint
         uses: terraform-linters/setup-tflint@v4
@@ -51,7 +53,9 @@ jobs:
           directory: ./terraform
 
       - name: Terraform Plan
-        run: terraform plan -var-file=terraform.auto.tfvars
+        run: |
+          cd terraform
+          terraform plan -var-file=terraform.auto.tfvars
 
       - name: Upload tfvars for apply/destroy
         uses: actions/upload-artifact@v4
