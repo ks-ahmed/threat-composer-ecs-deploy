@@ -1,7 +1,8 @@
 name: Build and Push Docker Image
 
 on:
-  workflow_dispatch:
+  push:
+    
 
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
