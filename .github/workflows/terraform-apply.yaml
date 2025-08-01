@@ -16,7 +16,7 @@ jobs:
         with:
           workflow: terraform-plan.yml
           name: terraform-vars
-          path: .
+          path: ./terraform
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
