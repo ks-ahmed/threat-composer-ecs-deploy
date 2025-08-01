@@ -27,17 +27,15 @@ jobs:
         with:
           terraform_version: 1.8.0
 
-      - name: Write terraform.auto.tfvars
-        run: |
-          echo 'container_image    = "${{ github.event.inputs.image_uri }}"' > terraform/terraform.auto.tfvars
-          echo 'cloudflare_zone_id = "${{ secrets.CLOUDFLARE_ZONE_ID }}"' >> terraform/terraform.auto.tfvars
-          echo 'cloudflare_api_token = "${{ secrets.CLOUDFLARE_API_TOKEN }}"' >> terraform/terraform.auto.tfvars
-          echo 'domain_name        = "${{ secrets.DOMAIN_NAME }}"' >> terraform/terraform.auto.tfvars
-
       - name: Terraform Init
-        run: terraform init
         working-directory: ./terraform
+        run: terraform init
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve -var-file=terraform.auto.tfvars
         working-directory: ./terraform
+        run: |
+          terraform apply -auto-approve \
+            -var="container_image=${{ github.event.inputs.image_uri }}" \
+            -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
+            -var="cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -var="domain_name=${{ secrets.DOMAIN_NAME }}"

@@ -1,12 +1,12 @@
 name: Terraform Plan
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       image_uri:
-        description: 'Full container image URI (e.g. 123456.dkr.ecr.us-east-1.amazonaws.com/tm-app:abc123)'
         required: true
-
+        type: string
+        
 jobs:
   terraform-plan:
     runs-on: ubuntu-latest
@@ -27,17 +27,9 @@ jobs:
         with:
           terraform_version: 1.8.0
 
-      - name: Write terraform.auto.tfvars
-        run: |
-          echo 'container_image    = "${{ github.event.inputs.image_uri }}"' > terraform/terraform.auto.tfvars
-          echo 'cloudflare_zone_id = "${{ secrets.CLOUDFLARE_ZONE_ID }}"' >> terraform/terraform.auto.tfvars
-          echo 'cloudflare_api_token = "${{ secrets.CLOUDFLARE_API_TOKEN }}"' >> terraform/terraform.auto.tfvars
-          echo 'domain_name        = "${{ secrets.DOMAIN_NAME }}"' >> terraform/terraform.auto.tfvars
-
       - name: Terraform Init
-        run: |
-          cd terraform
-          terraform init
+        working-directory: ./terraform
+        run: terraform init
 
       - name: Run TFLint
         uses: terraform-linters/setup-tflint@v4
@@ -53,12 +45,10 @@ jobs:
           directory: ./terraform
 
       - name: Terraform Plan
+        working-directory: ./terraform
         run: |
-          cd terraform
-          terraform plan -var-file=terraform.auto.tfvars
-
-      - name: Upload tfvars for apply/destroy
-        uses: actions/upload-artifact@v4
-        with:
-          name: terraform-vars
-          path: terraform.auto.tfvars
+          terraform plan \
+            -var="container_image=${{ github.event.inputs.image_uri }}" \
+            -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
+            -var="cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -var="domain_name=${{ secrets.DOMAIN_NAME }}"

@@ -1,7 +1,9 @@
 name: Build and Push Docker Image
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -30,17 +32,18 @@ jobs:
         run: |
           ECR_URI=$(aws ecr describe-repositories --repository-names $ECR_REPOSITORY --query 'repositories[0].repositoryUri' --output text)
           echo "ECR_URI=$ECR_URI" >> $GITHUB_ENV
+          echo "image_uri=$ECR_URI:${GITHUB_SHA}" >> $GITHUB_OUTPUT
 
       - name: Build Docker image
         run: docker build -t $ECR_REPOSITORY:latest ./app
 
       - name: Tag Docker image
-        run: docker tag $ECR_REPOSITORY:latest $ECR_URI:latest
+        run: docker tag $ECR_REPOSITORY:latest $ECR_URI:${GITHUB_SHA}
 
       - name: Run Trivy vulnerability scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: $ECR_URI:latest
+          image-ref: ${{ env.ECR_URI }}:${{ github.sha }}
           format: table
           exit-code: '1'
           ignore-unfixed: true
@@ -48,8 +51,11 @@ jobs:
           severity: CRITICAL,HIGH
 
       - name: Push Docker image to ECR
-        run: docker push $ECR_URI:latest
+        run: docker push $ECR_URI:${GITHUB_SHA}
 
-      - name: Output full image URI
-        run: |
-          echo "✅ Image pushed: ${ECR_URI}:${GITHUB_SHA}"
+      - name: Trigger Terraform Plan
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: terraform-plan.yaml
+          inputs: |
+            image_uri: $ECR_URI:${GITHUB_SHA}
