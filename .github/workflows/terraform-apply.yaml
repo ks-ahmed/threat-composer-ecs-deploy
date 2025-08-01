@@ -27,14 +27,16 @@ jobs:
         with:
           terraform_version: 1.8.0
 
-      - name: Download terraform vars
+      - name: Download terraform vars artifact
         uses: actions/download-artifact@v4
         with:
           name: terraform-vars
-          path: .
+          path: ./terraform
 
       - name: Terraform Init
         run: terraform init
+        working-directory: ./terraform
 
       - name: Terraform Apply
         run: terraform apply -auto-approve -var-file=terraform.auto.tfvars
+        working-directory: ./terraform
