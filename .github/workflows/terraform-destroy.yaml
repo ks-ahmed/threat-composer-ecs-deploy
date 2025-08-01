@@ -31,7 +31,7 @@ jobs:
         run: |
           echo 'container_image    = "${{ github.event.inputs.image_uri }}"' > terraform/terraform.auto.tfvars
           echo 'cloudflare_zone_id = "${{ secrets.CLOUDFLARE_ZONE_ID }}"' >> terraform/terraform.auto.tfvars
-          echo 'cloudflare_api_key = "${{ secrets.CLOUDFLARE_API_KEY }}"' >> terraform/terraform.auto.tfvars
+          echo 'cloudflare_api_token = "${{ secrets.CLOUDFLARE_API_TOKEN }}"' >> terraform/terraform.auto.tfvars
           echo 'domain_name        = "${{ secrets.DOMAIN_NAME }}"' >> terraform/terraform.auto.tfvars
 
       - name: Terraform Init
