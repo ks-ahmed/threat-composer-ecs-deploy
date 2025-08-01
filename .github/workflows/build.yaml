@@ -37,10 +37,10 @@ jobs:
       - name: Tag Docker image
         run: docker tag $ECR_REPOSITORY:latest $ECR_URI:latest
 
-      - name: Run Trivy vulnerability scan
+      - name: Run Trivy Scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: $ECR_URI:latest
+          image-ref: ${{ env.ECR_URI }}:latest
           format: table
           exit-code: '1'
           ignore-unfixed: true
