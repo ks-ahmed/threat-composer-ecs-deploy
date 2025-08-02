@@ -63,7 +63,7 @@ This design ensures that application containers are **not directly accessible** 
 
 ## Architecture Diagram
 
-![tm-app2](https://github.com/user-attachments/assets/2044a4cb-8746-459c-a4ca-3df7d3081d91)
+![tm-app](https://github.com/user-attachments/assets/5287b9bf-d691-4203-aa3e-1d85644026a6)
 
 > Includes ALB, ECS Fargate, ECR, ACM, GitHub Actions CI/CD, Cloudflare DNS, and IAM roles – all provisioned with Terraform.
 
