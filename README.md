@@ -13,8 +13,7 @@ This architecture exemplifies modern **DevSecOps** practices—combining automat
 
 ### Live Demo:
 
-
-https://github.com/user-attachments/assets/7c7b4f44-b98c-4e29-8acc-9d493eb4ed87
+https://github.com/user-attachments/assets/f50dbf89-b2a2-4fd8-9308-192e3773d157
 
 
 ---
@@ -59,11 +58,15 @@ This deployment leverages a **multi-subnet AWS VPC** setup to enforce **network 
 This design ensures that application containers are **not directly accessible** from the internet, reducing the attack surface and following **zero-trust architecture principles**.
 
 ---
+<div align=center> 
+  <img align=center src="https://github.com/user-attachments/assets/8b7754f6-cbba-4f71-a77f-843b3c1bb816" width="650" height="850"/>
+</div>
 
+---
 
 ## Architecture Diagram
 
-![tm-app](https://github.com/user-attachments/assets/5287b9bf-d691-4203-aa3e-1d85644026a6)
+
 
 > Includes ALB, ECS Fargate, ECR, ACM, GitHub Actions CI/CD, Cloudflare DNS, and IAM roles – all provisioned with Terraform.
 
@@ -172,34 +175,34 @@ echo "➡️ Step 6: Cloudflare routes traffic from tm.vettlyai.com to ALB"
 # Screenshots
 
 ---
-
-<img width="1504" height="777" alt="Screenshot 2025-07-12 114303" src="https://github.com/user-attachments/assets/5a2cbb57-d53f-4717-9000-e0763de5ac69" />
-
----
-
-<img width="1559" height="815" alt="Screenshot 2025-07-12 114352" src="https://github.com/user-attachments/assets/fb2b813c-d60a-438e-8e2a-6ce7ba10cee6" />
-
----
-
-<img width="1563" height="802" alt="Screenshot 2025-07-12 114404" src="https://github.com/user-attachments/assets/1054f59a-cb8b-486a-8cdd-84399e8ef451" />
-
----
-
-<img width="1613" height="808" alt="Screenshot 2025-07-12 114506" src="https://github.com/user-attachments/assets/ff20c503-ff39-4492-b990-fded933383fa" />
-
----
-
-<img width="1455" height="605" alt="Screenshot 2025-07-12 114828" src="https://github.com/user-attachments/assets/ad69c62e-cb32-47c5-81c2-dad6e40d215f" />
+<img width="1502" height="761" alt="Screenshot 2025-08-02 170657" src="https://github.com/user-attachments/assets/315eded0-beda-4ae9-81ef-167fd41d5e86" />
 
 
 ---
 
-<img width="1877" height="1056" alt="Screenshot 2025-07-12 114003" src="https://github.com/user-attachments/assets/31388eba-fe41-49ac-992b-7a1af38eaf03" />
+<img width="1499" height="831" alt="Screenshot 2025-08-02 170709" src="https://github.com/user-attachments/assets/9a09b5e8-abba-415a-83d5-df7c6199a0a5" />
+
+---
+
+<img width="1597" height="796" alt="Screenshot 2025-08-02 170838" src="https://github.com/user-attachments/assets/9b76267f-4444-4ff0-8755-92f2700360ea" />
+
+---
+
+<img width="1371" height="966" alt="Screenshot 2025-08-02 171245" src="https://github.com/user-attachments/assets/cdc6c381-5405-44fd-985f-b35df154a4aa" />
+
+---
+
+<img width="1338" height="776" alt="Screenshot 2025-08-02 171304" src="https://github.com/user-attachments/assets/62a4c54e-a07f-4512-8373-755fc191ad0d" />
 
 
 ---
 
-## 🧪 Local Development Setup
+<img width="1884" height="1060" alt="Screenshot 2025-08-02 170849" src="https://github.com/user-attachments/assets/a1f461aa-ddc3-400b-bed8-fe5684fc7005" />
+
+
+---
+
+## Local Development Setup
 
 You can run the app locally using Docker for development and testing:
 
