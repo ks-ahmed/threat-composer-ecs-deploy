@@ -1,32 +1,30 @@
-# ECS Threat Modelling Tool – End-to-End DevSecOps on AWS
+# ECS: End-to-End DevSecOps on AWS
 
-# Threat Modelling Tool
+## Threat Modelling Tool – Overview
 
-Welcome to the **Threat Modelling Tool**, a fully containerized web application designed to provide teams with an intuitive platform for collaboratively identifying, mapping, and managing security threats within their applications. This project showcases a modern, production-grade cloud architecture built on Amazon Web Services (AWS) using ECS Fargate, a serverless container orchestration service that removes the need to manage servers, allowing the application to scale seamlessly based on demand. By leveraging containerization, the application ensures consistent, reliable deployments across development, testing, and production environments.
+Welcome to the **Threat Modelling Tool**, a containerized web application designed for teams to collaboratively identify and manage security threats. Built for the cloud, this project leverages **AWS ECS Fargate** for serverless container orchestration, enabling scalable, consistent deployments across all environments.
 
-At the core of this project lies an automated infrastructure provisioning and deployment pipeline powered by **Terraform** and **GitHub Actions**. Terraform enables Infrastructure as Code (IaC), allowing you to define, version, and automate the complete cloud infrastructure lifecycle — from network setup with VPCs and security groups, to ECS clusters, Application Load Balancers, and ACM certificates for HTTPS. GitHub Actions orchestrate the CI/CD workflows that automate building Docker images, pushing them securely to Amazon ECR, and deploying infrastructure changes in a controlled, repeatable fashion. This end-to-end automation minimizes human error, accelerates release cycles, and enforces best practices in DevOps and cloud engineering.
+The application runs inside **private subnets**, ensuring that core services are isolated from public access. All inbound traffic is routed through an **Application Load Balancer (ALB)** in a public subnet, enforcing **security through obscurity** by minimizing surface area and exposure. HTTPS is enforced via **AWS Certificate Manager (ACM)**, with **Cloudflare DNS** handling secure and reliable domain resolution.
 
-Security and scalability are deeply integrated into every aspect of this project. HTTPS encryption is enforced using AWS Certificate Manager (ACM) combined with Cloudflare DNS to provide trusted, fast, and secure traffic routing. IAM roles and policies are carefully configured following the principle of least privilege, ensuring each component only has the permissions it needs. The architecture supports fault tolerance through auto-scaling ECS tasks behind an Application Load Balancer (ALB), while modular Terraform code promotes reusability and maintainability. This project not only demonstrates technical proficiency but also reflects real-world cloud deployment challenges and solutions, making it an excellent showcase of modern DevSecOps and cloud-native application delivery.
+Infrastructure is fully automated with **Terraform** and **GitHub Actions**, enabling repeatable, versioned deployments using **Infrastructure as Code (IaC)**. Docker images are built and pushed to **Amazon ECR**, then deployed securely through CI/CD pipelines. IAM policies follow **least-privilege** principles, and the system is modular, scalable, and fault-tolerant by design.
+
+This architecture exemplifies modern **DevSecOps** practices—combining automation, scalability, and strong security posture into a production-ready cloud solution.
+
 
 ### Live Demo:
 
 
 https://github.com/user-attachments/assets/7c7b4f44-b98c-4e29-8acc-9d493eb4ed87
 
----
-
-## Project Overview
-
-This project delivers a **secure threat modeling dashboard** designed to empower teams with a collaborative platform for mapping and managing application security threats. Key features include:
-
-- **Containerized frontend application** built with React, providing an intuitive and responsive user interface
-- **Scalable deployment** on AWS ECS Fargate, enabling automatic resource management and high availability
-- **Robust HTTPS security** enforced through AWS Certificate Manager (ACM) and Cloudflare for encrypted, trusted communications
-- **Automated infrastructure workflows** including DNS routing, SSL certificate provisioning, and end-to-end CI/CD pipelines for streamlined deployments
 
 ---
 
-<img width="2767" height="599" alt="image" src="https://github.com/user-attachments/assets/ec8883f6-6c48-407b-8966-983ad1d21301" />
+## Key Highlights
+
+- **Private Subnet Isolation**: All ECS workloads are deployed in **private subnets**, preventing any direct exposure to the internet. Traffic reaches the application **only through an Application Load Balancer (ALB)** in the public subnet.
+- **Dockerized Frontend**: A React-based web interface, containerized for consistent deployments.
+- **Infrastructure as Code**: Fully managed using **Terraform**, broken into reusable modules.
+- **CI/CD Pipeline**: GitHub Actions automates building, pushing Docker images to **Amazon ECR**, and provisioning infrastructure.
 
 ---
 
@@ -42,43 +40,57 @@ This project delivers a **secure threat modeling dashboard** designed to empower
 | **Container**  | Docker (Multi-stage build)                  |
 
 ---
-## Remote Backend: S3 + DynamoDB for Terraform State Management
+## Architecture Overview
 
-As part of the Terraform infrastructure, this project uses a **remote backend** powered by **Amazon S3** and **DynamoDB** to securely and reliably manage the Terraform state across CI/CD pipelines and developers.
+This deployment leverages a **multi-subnet AWS VPC** setup to enforce **network segregation** and **enhance security**.
 
-### Why Use an S3 Remote Backend?
+- **Public Subnet (eu-west-a)** hosts:
+  - Application Load Balancer (ALB)
+  - ACM Certificates
+  - Cloudflare DNS entrypoint
+  - IAM Gateway components
 
-Using an S3 backend for Terraform state offers major advantages in team-based and production deployments:
+- **Private Subnet (eu-west-b)** hosts:
+  - **ECS Fargate tasks** for application workload
+  - **NAT Gateway** for outbound-only internet access
+  - **Amazon S3** for storing assets and remote backend state
+  - No inbound internet traffic allowed
 
-- **Centralized state storage** accessible to all environments and pipelines  
-- **Safe concurrent access** through **DynamoDB state locking**  
-- **Disaster recovery** via built-in S3 versioning  
-- **Auditability** and **change history** for state files  
-- **Automation-friendly** for CI/CD workflows  
+This design ensures that application containers are **not directly accessible** from the internet, reducing the attack surface and following **zero-trust architecture principles**.
 
-This makes collaboration between developers, automated pipelines, and infrastructure-safe changes possible in a secure, scalable manner.
+---
+
+
+## Architecture Diagram
+
+![tm-app2](https://github.com/user-attachments/assets/2044a4cb-8746-459c-a4ca-3df7d3081d91)
+
+> Includes ALB, ECS Fargate, ECR, ACM, GitHub Actions CI/CD, Cloudflare DNS, and IAM roles – all provisioned with Terraform.
+
+> ECS Fargate runs in a private subnet. Public traffic is routed through Cloudflare → ALB → ECS tasks via HTTPS.
 
 ---
 
-### Automated Backend Provisioning
+### Automated Backend Provisioning (S3 with Object Lock)
 
-The `backend` Terraform module located at `terraform/modules/backend` provisions:
+The `backend` Terraform module at `terraform/modules/backend` provisions a secure, centralized remote backend using **Amazon S3**, enabling versioned and tamper-resistant Terraform state management — without requiring DynamoDB.
 
-- An S3 bucket (e.g. `vettlyai-tf-state-prod`) for remote state  
-- A DynamoDB table (e.g. `terraform-locks`) for state locking and consistency
+Key components:
 
-```hcl
-# terraform/main.tf
-module "backend" {
-  source                  = "./modules/backend"
-  backend_bucket_name     = "vettlyai-tf-state-prod"
-  dynamodb_table_name     = "terraform-locks"
-  region                  = "eu-west-2"
-}
-```
-By adopting a **remote backend**, the  infrastructure becomes more **reliable, collaborative, and resilient** — ideal for scaling Terraform workflows in modern cloud environments.
+- **S3 Bucket**
+  - Configured with **Object Lock (Governance Mode)** for **immutable state protection**
+  - **Versioning enabled** to preserve historical state files and support recovery
+  - **Server-side encryption** (SSE-S3 or SSE-KMS) for data-at-rest protection
+  - Optional **bucket policy restrictions** to control access by IAM role or condition
 
----
+This setup provides:
+
+- **Centralized state**: Shared across teams and CI/CD pipelines  
+- **Tamper protection**: Using S3 Object Lock to prevent accidental or malicious state deletion/modification  
+- **Auditability**: S3 versioning enables historical tracking of changes  
+- **Automation ready**: Ideal for CI/CD pipelines using GitHub Actions or other runners
+
+
 
 # Project Architecture
 ---
@@ -127,16 +139,6 @@ By adopting a **remote backend**, the  infrastructure becomes more **reliable, c
 
 ```
 
-
----
-
-## Architecture Diagram
-
-<img width="5032" height="1527" alt="image" src="https://github.com/user-attachments/assets/90aa1991-d094-4cdd-870a-f9aada3b1506" />
-
-> Includes ALB, ECS Fargate, ECR, ACM, GitHub Actions CI/CD, Cloudflare DNS, and IAM roles – all provisioned with Terraform.
-
----
 
 ## CI/CD Workflow Overview
 
@@ -195,12 +197,38 @@ echo "➡️ Step 6: Cloudflare routes traffic from tm.vettlyai.com to ALB"
 <img width="1877" height="1056" alt="Screenshot 2025-07-12 114003" src="https://github.com/user-attachments/assets/31388eba-fe41-49ac-992b-7a1af38eaf03" />
 
 
-# How to Use (For Reviewers)
+---
 
-  - Clone the repo
-  - Update terraform.tfvars or GitHub secrets
-  - Trigger CI/CD pipelines on GitHub Actions
-  - Access the app at: https://tm.vettlyai.com
+## 🧪 Local Development Setup
+
+You can run the app locally using Docker for development and testing:
+
+### Prerequisites
+
+- [Docker](https://www.docker.com/)
+- [Node.js](https://nodejs.org/)
+- [GitHub CLI](https://cli.github.com/) (for GitHub Actions if needed)
+
+### Steps
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/your-org/threat-modelling-tool.git
+cd threat-modelling-tool
+
+# 2. Navigate to the app directory
+cd app
+
+# 3. Install dependencies
+npm install
+
+# 4. Run the app in local dev mode
+npm start
+
+# OR run it as a Docker container:
+docker build -t tm-app .
+docker run -p 8080:8080 tm-app
+```
 
 ## Why This Project?
 
