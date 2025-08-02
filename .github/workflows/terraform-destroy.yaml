@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       image_uri:
-        description: 'Full container image URI (e.g. 123456.dkr.ecr.us-east-1.amazonaws.com/tm-app:abc123)'
+        description: 'Full container image URI'
         required: true
 
 jobs:
