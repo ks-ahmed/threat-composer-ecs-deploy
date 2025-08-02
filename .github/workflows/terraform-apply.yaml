@@ -3,6 +3,9 @@ name: Terraform Apply
 on:
   workflow_dispatch:
 
+env:
+  IMAGE_TAG: latest
+
 jobs:
   terraform-apply:
     runs-on: ubuntu-latest
@@ -18,21 +21,27 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Get ECR URI
+        id: ecr
+        run: |
+          URI=$(aws ecr describe-repositories --repository-names tm-app --query 'repositories[0].repositoryUri' --output text)
+          echo "ECR_URI=$URI" >> $GITHUB_ENV
+          echo "IMAGE_URI=$URI:${IMAGE_TAG}" >> $GITHUB_ENV
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.8.0
 
-      - name: Download Terraform Plan Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: tfplan
-          path: terraform/
-
       - name: Terraform Init
         working-directory: ./terraform
         run: terraform init
 
-      - name: Terraform Apply using Saved Plan
+      - name: Terraform Apply
         working-directory: ./terraform
-        run: terraform apply tfplan.binary
+        run: |
+          terraform apply -auto-approve \
+            -var="container_image=${{ env.IMAGE_URI }}" \
+            -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
+            -var="cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -var="domain_name=${{ secrets.DOMAIN_NAME }}"

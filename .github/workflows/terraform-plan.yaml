@@ -53,18 +53,11 @@ jobs:
         with:
           directory: ./terraform
 
-      - name: Terraform Plan and Save to File
+      - name: Terraform Plan
         working-directory: ./terraform
         run: |
           terraform plan \
-            -out=tfplan.binary \
             -var="container_image=${{ env.IMAGE_URI }}" \
             -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
             -var="cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" \
             -var="domain_name=${{ secrets.DOMAIN_NAME }}"
-
-      - name: Upload Terraform Plan File
-        uses: actions/upload-artifact@v4
-        with:
-          name: tfplan
-          path: terraform/tfplan.binary
