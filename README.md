@@ -68,7 +68,7 @@ This design ensures that application containers are **not directly accessible** 
 
 ---
 
-![tm-composer](https://github.com/user-attachments/assets/17895767-cfc0-4d4d-b6ec-47ee5f1fada6)
+![tm-app](https://github.com/user-attachments/assets/44ff24af-5575-444c-ae75-cc2b00479b2c)
 
 ---
 
