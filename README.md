@@ -1,5 +1,10 @@
 # ECS: End-to-End DevSecOps on AWS
 
+[![Terraform](https://img.shields.io/badge/IaC-Terraform-623CE4?logo=terraform&logoColor=white)](https://www.terraform.io/)
+[![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub_Actions-2088FF?logo=githubactions&logoColor=white)](https://github.com/features/actions)
+[![Docker](https://img.shields.io/badge/Container-Docker-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+[![AWS](https://img.shields.io/badge/Cloud-AWS-FF9900?logo=amazonaws&logoColor=white)](https://aws.amazon.com/)
+
 ## Threat Modelling Tool – Overview
 
 Welcome to the **Threat Modelling Tool**, a containerized web application designed for teams to collaboratively identify and manage security threats. Built for the cloud, this project leverages **AWS ECS Fargate** for serverless container orchestration, enabling scalable, consistent deployments across all environments.
@@ -57,16 +62,15 @@ This deployment leverages a **multi-subnet AWS VPC** setup to enforce **network 
 
 This design ensures that application containers are **not directly accessible** from the internet, reducing the attack surface and following **zero-trust architecture principles**.
 
----
-<div align=center> 
-  <img align=center src="https://github.com/user-attachments/assets/8b7754f6-cbba-4f71-a77f-843b3c1bb816" width="650" height="850"/>
-</div>
 
----
 
 ## Architecture Diagram
 
+---
 
+<img width="3000" height="2800" alt="Blank diagram" src="https://github.com/user-attachments/assets/42c71f0d-ca5b-4934-8bf6-4cce0aec45d5" />
+
+---
 
 > Includes ALB, ECS Fargate, ECR, ACM, GitHub Actions CI/CD, Cloudflare DNS, and IAM roles – all provisioned with Terraform.
 
