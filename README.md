@@ -7,13 +7,14 @@
 
 ## Threat Modelling Tool – Overview
 
-Welcome to the **Threat Modelling Tool**, a containerized web application designed for teams to collaboratively identify and manage security threats. Built for the cloud, this project leverages **AWS ECS Fargate** for serverless container orchestration, enabling scalable, consistent deployments across all environments.
+Welcome to the **Threat Modelling Tool**, a containerised web application designed for teams to collaboratively identify and manage security threats. Built for the cloud, this project leverages **AWS ECS Fargate** for serverless container orchestration, enabling scalable, consistent deployments across all environments.
 
-The application runs inside **private subnets**, ensuring that core services are isolated from public access. All inbound traffic is routed through an **Application Load Balancer (ALB)** in a public subnet, enforcing **security through obscurity** by minimizing surface area and exposure. HTTPS is enforced via **AWS Certificate Manager (ACM)**, with **Cloudflare DNS** handling secure and reliable domain resolution.
+The application runs inside **private subnets**, ensuring that core services are isolated from public access. All inbound traffic is routed through an **Application Load Balancer (ALB)** in a public subnet, enforcing **security through obscurity** by minimising surface area and exposure. HTTPS is enforced via **AWS Certificate Manager (ACM)**, with **Cloudflare DNS** handling secure and reliable domain resolution.
 
 Infrastructure is fully automated with **Terraform** and **GitHub Actions**, enabling repeatable, versioned deployments using **Infrastructure as Code (IaC)**. Docker images are built and pushed to **Amazon ECR**, then deployed securely through CI/CD pipelines. IAM policies follow **least-privilege** principles, and the system is modular, scalable, and fault-tolerant by design.
 
-This architecture exemplifies modern **DevSecOps** practices—combining automation, scalability, and strong security posture into a production-ready cloud solution.
+This architecture exemplifies modern **DevSecOps** practices—combining automation, scalability, and a strong security posture into a production-ready cloud solution.
+
 
 
 ### Live Demo:
@@ -25,10 +26,11 @@ https://github.com/user-attachments/assets/f50dbf89-b2a2-4fd8-9308-192e3773d157
 
 ## Key Highlights
 
-- **Private Subnet Isolation**: All ECS workloads are deployed in **private subnets**, preventing any direct exposure to the internet. Traffic reaches the application **only through an Application Load Balancer (ALB)** in the public subnet.
-- **Dockerized Frontend**: A React-based web interface, containerized for consistent deployments.
-- **Infrastructure as Code**: Fully managed using **Terraform**, broken into reusable modules.
+- **Private Subnet Isolation**: All ECS workloads are deployed in **private subnets**, preventing any direct exposure to the internet. Traffic reaches the application **only via an Application Load Balancer (ALB)** in the public subnet.
+- **Containerised Frontend**: A React-based web interface, containerised for consistent deployments.
+- **Infrastructure as Code**: Fully managed using **Terraform**, structured into reusable modules.
 - **CI/CD Pipeline**: GitHub Actions automates building, pushing Docker images to **Amazon ECR**, and provisioning infrastructure.
+
 
 ---
 
@@ -51,17 +53,16 @@ This deployment leverages a **multi-subnet AWS VPC** setup to enforce **network 
 - **Public Subnet (eu-west-a)** hosts:
   - Application Load Balancer (ALB)
   - ACM Certificates
-  - Cloudflare DNS entrypoint
+  - Cloudflare DNS entry point
   - IAM Gateway components
 
 - **Private Subnet (eu-west-b)** hosts:
   - **ECS Fargate tasks** for application workload
   - **NAT Gateway** for outbound-only internet access
   - **Amazon S3** for storing assets and remote backend state
-  - No inbound internet traffic allowed
+  - No inbound internet traffic permitted
 
-This design ensures that application containers are **not directly accessible** from the internet, reducing the attack surface and following **zero-trust architecture principles**.
-
+This design ensures that application containers are **not directly accessible** from the internet, reducing the attack surface and aligning with **zero-trust architecture principles**.
 
 
 ## Architecture Diagram
@@ -80,7 +81,7 @@ This design ensures that application containers are **not directly accessible** 
 
 ### Automated Backend Provisioning (S3 with Object Lock)
 
-The `backend` Terraform module at `terraform/modules/backend` provisions a secure, centralized remote backend using **Amazon S3**, enabling versioned and tamper-resistant Terraform state management — without requiring DynamoDB.
+The `backend` Terraform module at `terraform/modules/backend` provisions a secure, centralised remote backend using **Amazon S3**, enabling versioned and tamper-resistant Terraform state management — without requiring DynamoDB.
 
 Key components:
 
@@ -92,10 +93,11 @@ Key components:
 
 This setup provides:
 
-- **Centralized state**: Shared across teams and CI/CD pipelines  
+- **Centralised state**: Shared across teams and CI/CD pipelines  
 - **Tamper protection**: Using S3 Object Lock to prevent accidental or malicious state deletion/modification  
 - **Auditability**: S3 versioning enables historical tracking of changes  
-- **Automation ready**: Ideal for CI/CD pipelines using GitHub Actions or other runners
+- **Automation-ready**: Ideal for CI/CD pipelines using GitHub Actions or other runners
+
 
 
 
@@ -244,17 +246,17 @@ This project was developed to replicate a real-world, production-grade cloud dep
 It serves as a comprehensive demonstration of:
 
 ### Practical DevOps Expertise
-- End-to-end cloud architecture deployment using AWS services like ECS (Fargate), ALB, ACM, ECR, IAM, and VPC
-- Modular Infrastructure as Code (IaC) with Terraform, allowing scalable, reusable, and maintainable infrastructure components
-- CI/CD automation through GitHub Actions, orchestrating Docker image builds, ECR pushes, and infrastructure provisioning workflows
+- End-to-end cloud architecture deployment using AWS services such as ECS (Fargate), ALB, ACM, ECR, IAM, and VPC
+- Modular Infrastructure as Code (IaC) with Terraform, enabling scalable, reusable, and maintainable infrastructure components
+- CI/CD automation via GitHub Actions, orchestrating Docker image builds, ECR pushes, and infrastructure provisioning workflows
 
 ### Enterprise-Level Security
 - HTTPS enforcement with AWS Certificate Manager (ACM)
-- IAM roles configured using the principle of least privilege
+- IAM roles configured according to the principle of least privilege
 - Domain-level protection and secure traffic routing using Cloudflare DNS
 
 ### Real-World Scenario Simulation
-This project simulates how organizations deploy cloud-native applications with full infrastructure automation, pipeline integration, and robust security, making it ideal for:
+This project simulates how organisations deploy cloud-native applications with full infrastructure automation, pipeline integration, and robust security—making it ideal for:
 
 - Showcasing hands-on DevOps and cloud engineering proficiency
 - Highlighting secure, scalable, and automated AWS deployments
