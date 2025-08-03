@@ -69,7 +69,7 @@ This design ensures that application containers are **not directly accessible** 
 
 ---
 
-![tm-app](https://github.com/user-attachments/assets/44ff24af-5575-444c-ae75-cc2b00479b2c)
+![Blank diagram (1)](https://github.com/user-attachments/assets/be9451f0-5ca0-4800-9c1f-968d523e15d1)
 
 ---
 
