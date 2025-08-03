@@ -68,7 +68,7 @@ This design ensures that application containers are **not directly accessible** 
 
 ---
 
-<img width="3000" height="2800" alt="Blank diagram" src="https://github.com/user-attachments/assets/42c71f0d-ca5b-4934-8bf6-4cce0aec45d5" />
+![Blank diagram (2)](https://github.com/user-attachments/assets/442119ff-56a0-48f8-ae41-240614531db7)
 
 ---
 
