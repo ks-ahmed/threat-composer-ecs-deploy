@@ -69,7 +69,7 @@ This design ensures that application containers are **not directly accessible** 
 
 ---
 
-<img width="4000" height="6240" alt="tm-appv1" src="https://github.com/user-attachments/assets/a5e32fe0-2f41-4634-a07b-cb91398e50d6" />
+<img width="3000" height="1240" alt="tm-appv2" src="https://github.com/user-attachments/assets/bc8288c6-89da-450b-abe1-8ea72bf2a44f" />
 
 ---
 
