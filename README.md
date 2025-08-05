@@ -70,7 +70,7 @@ This design ensures that application containers are **not directly accessible** 
 ---
 
 
-<img width="2900" height="1240" alt="tm-appv6" src="https://github.com/user-attachments/assets/133dff3f-8658-4858-804d-ec95f96ac18e" />
+<img width="5239" height="2240" alt="latest" src="https://github.com/user-attachments/assets/45042399-f3f2-42b3-a878-e0ec731618b1" />
 
 
 ---
@@ -116,7 +116,7 @@ This setup provides:
 │   ├── provider.tf                
 │
 │   ├── modules/                  
-│   │   ├── backend/              
+│   │   ├── s3_backend/              
 │   │   │   ├── main.tf
 │   │   │   ├── variables.tf
 │   │   │   └── outputs.tf
