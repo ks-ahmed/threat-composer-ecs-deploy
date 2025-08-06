@@ -2,8 +2,11 @@ name: Build and Push Docker Image
 
 on:
   push:
+    branches:
+      - main
     paths:
-      - '.github/workflows/**'
+      - 'app/**'
+      - 'Dockerfile'
     
 
 env:
@@ -55,4 +58,4 @@ jobs:
 
       - name: Output full image URI
         run: |
-          echo "✅ Image pushed: ${ECR_URI}:${GITHUB_SHA}"
+          echo "Image pushed: ${ECR_URI}:${GITHUB_SHA}"
