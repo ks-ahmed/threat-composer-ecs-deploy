@@ -35,6 +35,13 @@ jobs:
         working-directory: ./terraform
         run: |
           terraform destroy -auto-approve \
+            -target=module.vpc \
+            -target=module.ecs \
+            -target=module.alb \
+            -target=module.acm_validation \
+            -target=module.iam \
+            -target=module.cloudflare_dns \
+            -target=module.acm \
             -var="container_image=${{ github.event.inputs.image_uri }}" \
             -var="cloudflare_zone_id=${{ secrets.CLOUDFLARE_ZONE_ID }}" \
             -var="cloudflare_api_token=${{ secrets.CLOUDFLARE_API_TOKEN }}" \
